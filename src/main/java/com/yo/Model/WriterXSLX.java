@@ -4,6 +4,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -18,12 +23,14 @@ public class WriterXSLX {
     private XSSFSheet sheet;
     private FileOutputStream os;
     private int indexRow;
+    private int indexRowClasification;
     
 
     public WriterXSLX(XSSFWorkbook wb, FileOutputStream outputStream){
         this.wb = wb;
         this.os = outputStream;
         indexRow = 0;
+        indexRowClasification = 0;
         //estilo de celdas
 
     }
@@ -51,38 +58,64 @@ public class WriterXSLX {
         this.sheet = wb.createSheet(sheetName);
     }
 
-    public void setTableHeader(Map<String,String> tableHeader){
-        //creamos columna
+    public void setTableHeader(Map<String,String> tableHeader, boolean flagClasification){
+        //distanciamos de la cabecera en 1
+        indexRow++;
+        //creamos fila
         XSSFRow rowTableHeader = sheet.createRow(indexRow);
         indexRow++;
 
+        //creamos estilo
+        XSSFCellStyle headerStyle = wb.createCellStyle();
+        XSSFFont bold = wb.createFont();
+        bold.setBold(true);
+        headerStyle.setFont(bold);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        headerStyle.setBorderBottom(BorderStyle.THICK);
+        headerStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+
         //Fecha
         XSSFCell cellDateHeader = rowTableHeader.createCell(0);
+        cellDateHeader.setCellStyle(headerStyle);
         cellDateHeader.setCellValue(tableHeader.get("Fecha"));
         
         //descripcion
         XSSFCell cellDescriptionHeader = rowTableHeader.createCell(1);
+        cellDescriptionHeader.setCellStyle(headerStyle);
         cellDescriptionHeader.setCellValue(tableHeader.get("Descripción"));
         
         //origen
         XSSFCell cellOriginHeader = rowTableHeader.createCell(2);
+        cellOriginHeader.setCellStyle(headerStyle);
         cellOriginHeader.setCellValue(tableHeader.get("Origen"));
         
         //credito
         XSSFCell cellCreditHeader = rowTableHeader.createCell(3);
+        cellCreditHeader.setCellStyle(headerStyle);
         cellCreditHeader.setCellValue(tableHeader.get("Crédito"));
         
         //debito
         XSSFCell cellDebitHeader = rowTableHeader.createCell(4);
+        cellDebitHeader.setCellStyle(headerStyle);
         cellDebitHeader.setCellValue(tableHeader.get("Débito"));
         
         //saldo
         XSSFCell cellBalanceHeader = rowTableHeader.createCell(5);
+        cellBalanceHeader.setCellStyle(headerStyle);
         cellBalanceHeader.setCellValue(tableHeader.get("Saldo"));
+
+        if(flagClasification){
+            //clasificacion
+            XSSFCell cellClasificationHeader = rowTableHeader.createCell(6);
+            cellClasificationHeader.setCellStyle(headerStyle);
+            cellClasificationHeader.setCellValue("Clasificacion");    
+        }
+
+
     }
     
 
-    public void setTableContent(Map<Integer,String[]> tableContent ){
+    public void setTableContent(Map<Integer,String[]> tableContent, Map<Integer, String> clasification ){
         for(int i=0; i <tableContent.size(); i++){
             XSSFRow contentRow = sheet.createRow(indexRow);
             indexRow++;
@@ -110,95 +143,146 @@ public class WriterXSLX {
             //saldo 
             XSSFCell balanceCell = contentRow.createCell(5);
             balanceCell.setCellValue(tableContent.get(i)[5]);
+            //clasificacion
+            if(clasification != null){
+                XSSFCell clasificationCell = contentRow.createCell(6);
+                clasificationCell.setCellValue(clasification.get(i));
+            }
+        }
+        int cant = 6;
+        if (clasification != null){
+            cant ++;
+        }
+        for (int j=0; j<cant; j++){
+            sheet.autoSizeColumn(j);
         }
 
     }
 
-
-
-    public void setHeader(Map<String, String> headerMap){
+    public void setHeader(Map<String, String> headerMap, boolean flagClasification){
         //titulo
         XSSFRow rowTitulo = sheet.createRow(indexRow);
+        indexRow++;
         XSSFCell cellTitulo = rowTitulo.createCell(0);
-        
         cellTitulo.setCellValue(headerMap.get("titulo"));
-
         XSSFFont f = wb.createFont();
         f.setBold(true);
-        XSSFCellStyle s = wb.createCellStyle();
-        s.setFont(f);
+        XSSFCellStyle titleStyle = wb.createCellStyle();
+        titleStyle.setFont(f);
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+        cellTitulo.setCellStyle(titleStyle);
+        int union = 6;
+        if(flagClasification){
+            union = 7;
+        }
+        sheet.addMergedRegion(new CellRangeAddress(0,0,0,union));
+        System.out.println("    Titulo seteado");
 
-        indexRow++;
+        //cell style negrita para todos los datos restantes
+        XSSFCellStyle boldStyle = wb.createCellStyle();
+        XSSFFont bold = wb.createFont();
+        bold.setBold(true);
+        boldStyle.setFont(bold);
 
         //lugar
         XSSFRow rowLugar = sheet.createRow(indexRow);
-        XSSFCell cellLugar = rowLugar.createCell(0);
-        cellLugar.setCellValue(headerMap.get("lugar"));
         indexRow++;
+        XSSFCell cellLugar = rowLugar.createCell(0);
+        cellLugar.setCellStyle(boldStyle);
+        cellLugar.setCellValue(headerMap.get("lugar"));
+        sheet.addMergedRegion(new CellRangeAddress(1,1,0,1));
+        System.out.println("    lugar seteado");
+
 
         //cuit (cabecera y valor)
         XSSFRow rowCuit = sheet.createRow(indexRow);
+        indexRow++;
         XSSFCell cellLabelCuit = rowCuit.createCell(0);
+        cellLabelCuit.setCellStyle(boldStyle);
         cellLabelCuit.setCellValue("cuit");
         XSSFCell cellCuit = rowCuit.createCell(1);
         cellCuit.setCellValue(headerMap.get("cuit"));
-        indexRow++;
+        System.out.println("    cuit seteado");
+
 
         //IVA (cabecera y valor)
         XSSFRow rowIva = sheet.createRow(indexRow);
+        indexRow++;
         XSSFCell cellLabelIva = rowIva.createCell(0);
+        cellLabelIva.setCellStyle(boldStyle);
         cellLabelIva.setCellValue("IVA");
         XSSFCell cellIva = rowIva.createCell(1);
         cellIva.setCellValue(headerMap.get("iva"));
-        indexRow++;
+        System.out.println("    IVA seteado");
+
         
         //numero de cuenta (cabecera y valor)
         XSSFRow rowTipoCuenta = sheet.createRow(indexRow);
+        indexRow++;
         XSSFCell cellLabelTipoCuenta = rowTipoCuenta.createCell(0);
+        cellLabelTipoCuenta.setCellStyle(boldStyle);
         cellLabelTipoCuenta.setCellValue("Tipo de cuenta");
         XSSFCell cellTipoCuenta = rowTipoCuenta.createCell(1);
         cellTipoCuenta.setCellValue(headerMap.get("tipo de cuenta"));
-        indexRow++;
+        System.out.println("    Numero cuenta seteado");
+
 
         //tipo de cuenta (cabecera y valor)
         XSSFRow rowCuenta = sheet.createRow(indexRow);
+        indexRow++;
         XSSFCell cellLabelCuenta = rowCuenta.createCell(0);
+        cellLabelCuenta.setCellStyle(boldStyle);
         cellLabelCuenta.setCellValue("n° de cuenta");
         XSSFCell cellCuenta = rowCuenta.createCell(1);
         cellCuenta.setCellValue(headerMap.get("cuenta"));
-        indexRow++;
+        System.out.println("    Tipo cuenta seteado");
+
 
         //inicio de periodo (cabecera y valor)
         XSSFRow rowPeriodoInicio = sheet.createRow(indexRow);
+        indexRow++;
         XSSFCell cellLabelPeriodoInicio = rowPeriodoInicio.createCell(0);
+        cellLabelPeriodoInicio.setCellStyle(boldStyle);
         cellLabelPeriodoInicio.setCellValue("inicio de periodo");
         XSSFCell cellPeriodoInicio = rowPeriodoInicio.createCell(1);
         cellPeriodoInicio.setCellValue(headerMap.get("inicio de periodo"));
-        indexRow++;
+        System.out.println("    Inicio periodo seteado");
+
 
         //fin de periodo (cabecera y valor)
         XSSFRow rowPeriodoFin = sheet.createRow(indexRow);
+        indexRow++;
         XSSFCell cellLabelPeriodoFin = rowPeriodoFin.createCell(0);
+        cellLabelPeriodoFin.setCellStyle(boldStyle);
         cellLabelPeriodoFin.setCellValue("fin de periodo");
         XSSFCell cellPeriodoFin = rowPeriodoFin.createCell(1);
         cellPeriodoFin.setCellValue(headerMap.get("fin de periodo"));
-        indexRow++;
+        System.out.println("    Fin periodo seteado");
+
 
         //saldo inicial (PDF) (cabecera y valor)
         XSSFRow rowSaldoInicial = sheet.createRow(indexRow);
+        indexRow++;
         XSSFCell cellLabelSaldoInicial = rowSaldoInicial.createCell(0);
+        cellLabelSaldoInicial.setCellStyle(boldStyle);
         cellLabelSaldoInicial.setCellValue("saldo inicial (PDF)");
         XSSFCell cellSaldoinicial = rowSaldoInicial.createCell(1);
         cellSaldoinicial.setCellValue(headerMap.get("saldo inicial"));
-        indexRow++;
+        System.out.println("    Saldo inicial seteado");
+
 
         //saldo final (PDF) (cabecera y valor)
         XSSFRow rowSaldoFinal = sheet.createRow(indexRow);
+        indexRow++;
         XSSFCell cellLabelSaldoFinal = rowSaldoFinal.createCell(0);
+        cellLabelSaldoFinal.setCellStyle(boldStyle);
         cellLabelSaldoFinal.setCellValue("saldo final (PDF)");
         XSSFCell cellSaldoFinal = rowSaldoFinal.createCell(1);
         cellSaldoFinal.setCellValue(headerMap.get("saldo final"));
-        indexRow++;
+        System.out.println("    Saldo final seteado");
+
     }
     
+
+
 }

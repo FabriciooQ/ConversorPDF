@@ -33,7 +33,7 @@ public class Parser {
         }
         //pattern, matcher y cosas para multilinea, no se usa Extractor porque hay que iterar sobre muchos renglones
         Pattern pDateMultilane = Pattern.compile("^(\\d\\d/\\d\\d/\\d\\d)\\s(.*)");
-        Matcher m;
+        Matcher  m;
         String description;
 
         while(index < lineas.length){
@@ -65,7 +65,7 @@ public class Parser {
                         }
                         index++;
                     }
-                    dataLine[1] = description;
+                    dataLine[1] = description.replaceAll("\n","").replaceAll("\r","").trim();
                     String[] remainingData = lineas[index].trim().split("\\s+");
                     if(remainingData.length == 3){
                         dataLine[2] = remainingData[0];
