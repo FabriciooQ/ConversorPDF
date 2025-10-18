@@ -3,7 +3,7 @@
 ^DEB. AUTOMATICO DE SERV..* - Proveedores
 ^COMPRA DEBITO.* - Proveedores
 ^ECHEQ 48 HS..* - Proveedores
-^TRF INMED PROVEED.*- Proveedores
+^TRF INMED PROVEED.* - Proveedores
 ^TRANSFERENCIAS CASH PROVEEDORES.* - Proveedores
 ^ECHEQ RECHAZADOS.* - Proveedores-AJUSTE
 .*HABERES.* - HABERES

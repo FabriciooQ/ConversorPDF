@@ -16,6 +16,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -47,20 +48,30 @@ public class MainScene {
 
         //Titulo
         Text title = new Text("Conversor de PDF"); 
+        title.getStyleClass().add("title");
         HBox titleLayout = new HBox(title);
         titleLayout.setAlignment(Pos.CENTER);
         root.getChildren().add(titleLayout);
 
         //selector archivo
         Label labelSelector = new Label("Seleccionar pdf");
+        labelSelector.getStyleClass().add("label");
         TextArea textAreaArchive = new TextArea();
         textAreaArchive.setMaxWidth(285);
         textAreaArchive.setMaxHeight(1);
         //Button seleccionarArchivo
-        Button buttonSelect = new Button("Seleccionar");
+        Button buttonSelect = new Button();
+        ImageView folderLogoPDF = new ImageView(new Image(getClass().getResourceAsStream("/img/folder.png")));
+        folderLogoPDF.setFitWidth(25);
+        folderLogoPDF.setFitHeight(25);
+        folderLogoPDF.setPreserveRatio(true);
+        buttonSelect.setGraphic(folderLogoPDF);
+        buttonSelect.getStyleClass().add("button");
+        TextArea textAreaDestination = new TextArea();//la declaramos aca para poder usarlo en el onAction
         buttonSelect.setOnAction(e -> {
             String filePath = chooserPDF.openFile();
             textAreaArchive.setText(filePath);
+            textAreaDestination.setText(filePath.replace(".pdf", ".xlsx"));
         });
         //agregamos
         HBox selectFileLayout = new HBox(10, textAreaArchive, buttonSelect);
@@ -71,10 +82,18 @@ public class MainScene {
 
         //seleccion de carpeta para guardar archivo
         Label labelSaveFile = new Label("Seleccionar donde se va a guardar el excel");
-        TextArea textAreaDestination = new TextArea();
+        labelSaveFile.getStyleClass().add("label");
+        
+        textAreaDestination.getStyleClass().add("text-area");
         textAreaDestination.setMaxWidth(285);
         textAreaDestination.setMaxHeight(1);
-        Button butonSelectDestination = new Button("Seleccionar");
+        Button butonSelectDestination = new Button();
+        ImageView folderLogoExcel = new ImageView(new Image(getClass().getResourceAsStream("/img/folder.png")));
+        folderLogoExcel.setFitWidth(25);
+        folderLogoExcel.setFitHeight(25);
+        folderLogoExcel.setPreserveRatio(true);
+        butonSelectDestination.setGraphic(folderLogoExcel);
+        butonSelectDestination.getStyleClass().add("button");
         butonSelectDestination.setOnAction(e -> {
             String filePathDestination = chooserExcel.saveExcel();
             textAreaDestination.setText(filePathDestination);
@@ -88,10 +107,13 @@ public class MainScene {
 
         //Selector de banco y clasificacion
         Label labelbankSelector = new Label("Seleccionar Banco");
+        labelbankSelector.getStyleClass().add("label");
         ChoiceBox<String> bankSelector = new ChoiceBox<>();
+        bankSelector.getStyleClass().add("combo-box");
         bankSelector.getItems().addAll("Galicia");
         bankSelector.setValue("Galicia");
         Button buttonParams = new Button("Parametros");
+        buttonParams.getStyleClass().add("button");
         buttonParams.setDisable(true);
         buttonParams.setOnAction(e->{
             ParametersScene parametersScene = new ParametersScene(this.stage,this.scene,this.controller, width, height);
@@ -99,6 +121,7 @@ public class MainScene {
             stage.setScene(paramScene);
         });
         CheckBox buttonClasification = new CheckBox("Clasificar");
+        buttonClasification.getStyleClass().addAll("check-box");
         buttonClasification.setOnAction(e->{
            buttonParams.setDisable(!buttonParams.isDisable());
            System.out.println(buttonClasification.isSelected());
@@ -170,6 +193,7 @@ public class MainScene {
 
         //creamos la escena y la seteamos al stage principal
         Scene scene = new Scene(root, width, height);
+        scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
         return scene;
 
     }

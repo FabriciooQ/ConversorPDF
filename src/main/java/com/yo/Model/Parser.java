@@ -110,7 +110,11 @@ public class Parser {
         data.put("iva", iva);
 
         //numero de cuenta
-        String account = lines[1].split(" ")[1];
+        String[] arrays = lines[1].split(" ");
+        String account = "";
+        for(int i=1;i<arrays.length;i++){
+            account += arrays[i];
+        }
         data.put("cuenta", account);
 
         //lugar(puede estar en 2 renglones)

@@ -13,8 +13,11 @@ import java.util.Map;
 
 import com.yo.Controller.TransformationController;
 
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,6 +26,9 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -52,40 +58,63 @@ public class ParametersScene {
 
         //Titulo de escena
         Text title = new Text("Parametros clasificacion");
-        root.getChildren().add(title);
+        title.getStyleClass().add("title");
+        HBox titleLayout = new HBox(title);
+        titleLayout.setAlignment(Pos.CENTER);
+        root.getChildren().add(titleLayout);
 
         //cabeceras tabla
         Text expresionText = new Text("Expresion");
-        Text clasificationText = new Text("Clasificaion");
-        HBox tableHeader = new HBox(50, expresionText, clasificationText);
+        expresionText.getStyleClass().add("subtitle");
+        Text clasificationText = new Text("Clasificacion");
+        clasificationText.getStyleClass().add("subtitle");
+        HBox tableHeader = new HBox(120, expresionText, clasificationText);
+        tableHeader.setAlignment(Pos.CENTER);
         tableHeader.setAlignment(Pos.CENTER);
         root.getChildren().add(tableHeader);
         
         //box parametros
         VBox paramsLayout = new VBox(9);
+        //map que guarda los vbox de cada parametro
+        Map<Integer, VBox> map = new HashMap<>();
         //agregamos por cada parametro en el .txt una entrada
         for(int i=0; i<this.initialRules.size(); i++){
             //contador para ids
             ids++;
             //box horizontal de arriba
             TextArea expresionArea = new TextArea();
+            expresionArea.getStyleClass().add("inputs");
             expresionArea.setText(parseExpresion(this.initialRules.get(i)[0].trim()));
             expresionArea.setMaxHeight(1);
-            expresionArea.setId("e"+String.valueOf(ids));
             TextArea clasificationArea = new TextArea();
+            clasificationArea.getStyleClass().add("inputs");
             clasificationArea.setText(parseExpresion(this.initialRules.get(i)[1].trim()));
             clasificationArea.setMaxHeight(1);
-            clasificationArea.setId("c"+String.valueOf(ids));
-            Button delete = new Button("Eliminar");
-            HBox inputsLayout = new HBox(50, expresionArea, clasificationArea, delete);
+            Button delete = new Button();
+            delete.getStyleClass().addAll("button");
+            Image logo = new Image(this.getClass().getResourceAsStream("/img/borrar blanco.png"));
+            ImageView imageView = new ImageView(logo);
+            imageView.setFitWidth(25);
+            imageView.setFitHeight(25);
+            imageView.setPreserveRatio(true);
+            delete.setGraphic(imageView); 
+            delete.setPadding(new Insets(0));
+            delete.setOnAction(ev->{
+                VBox auxBox = (VBox)((Button)ev.getSource()).getParent().getParent().getParent();
+                paramsLayout.getChildren().remove(auxBox);
+                map.remove(Integer.valueOf(auxBox.getId()));
+            });
+            delete.setPadding(new Insets(20));
+            HBox auxLayout = new HBox (25, clasificationArea, delete);
+            HBox inputsLayout = new HBox(50, expresionArea, auxLayout);
             //box horizontal de abajo
             ToggleGroup group = new ToggleGroup();
             RadioButton begin = new RadioButton("Empieza");
-            begin.setId("bb"+String.valueOf(ids));
+            begin.getStyleClass().add("radio-button");
             RadioButton contains = new RadioButton("Contiene");
-            contains.setId("bc"+String.valueOf(ids));
+            contains.getStyleClass().add("radio-button");
             RadioButton ends = new RadioButton("Termina");
-            ends.setId("be"+String.valueOf(ids));
+            ends.getStyleClass().add("radio-button");
             begin.setToggleGroup(group);
             contains.setToggleGroup(group);
             ends.setToggleGroup(group);
@@ -106,32 +135,51 @@ public class ParametersScene {
             optionsLayout.setAlignment(Pos.CENTER_LEFT);
             //agregamos a los vbox
             VBox aux = new VBox(5, inputsLayout, optionsLayout);
+            aux.setId(String.valueOf(ids));
+            map.put(ids,aux);
             paramsLayout.getChildren().add(aux);
         } 
         root.getChildren().add(paramsLayout);
 
         //boton de agregar regla
         Button addRule = new Button("Agregar");
+        addRule.getStyleClass().addAll("button","secondary");
         addRule.setOnAction(e -> {
             //sumamos en 1 el id de reglas
             this.ids++;
             //box horizontal de arriba
             TextArea expresionArea = new TextArea();
+            expresionArea.getStyleClass().add("inputs");
             expresionArea.setMaxHeight(1);
-            expresionArea.setId("e"+String.valueOf(this.ids));
             TextArea clasificationArea = new TextArea();
+            clasificationArea.getStyleClass().add("inputs");
             clasificationArea.setMaxHeight(1);
-            clasificationArea.setId("c"+String.valueOf(this.ids));
-            Button delete = new Button("Eliminar");
-            HBox inputsLayout = new HBox(50, expresionArea, clasificationArea, delete);
+            Button delete = new Button();
+            delete.getStyleClass().addAll("button");
+            Image logo = new Image(this.getClass().getResourceAsStream("/img/borrar blanco.png"));
+            ImageView imageView = new ImageView(logo);
+            imageView.setFitWidth(25);
+            imageView.setFitHeight(25);
+            imageView.setPreserveRatio(true);
+            delete.setGraphic(imageView); 
+            delete.setOnAction(ev->{
+                VBox auxBox = (VBox)((Button)ev.getSource()).getParent().getParent().getParent();
+                paramsLayout.getChildren().remove(auxBox);
+                map.remove(Integer.valueOf(auxBox.getId()));
+                System.out.println(map.containsKey(Integer.valueOf(auxBox.getId())));
+            });
+            delete.setPadding(new Insets(20));
+            HBox auxLayout = new HBox (25, clasificationArea, delete);
+            HBox inputsLayout = new HBox(50, expresionArea, auxLayout);
             //box horizontal de abajo
             ToggleGroup group = new ToggleGroup();
             RadioButton begin = new RadioButton("Empieza");
-            begin.setId("bb"+String.valueOf(this.ids));
+            begin.getStyleClass().add("radio-button");
+            begin.setSelected(true);
             RadioButton contains = new RadioButton("Contiene");
-            contains.setId("bc"+String.valueOf(this.ids));
+            contains.getStyleClass().add("radio-button");
             RadioButton ends = new RadioButton("Termina");
-            ends.setId("be"+String.valueOf(this.ids));
+            ends.getStyleClass().add("radio-button");
             begin.setToggleGroup(group);
             contains.setToggleGroup(group);
             ends.setToggleGroup(group);
@@ -139,6 +187,9 @@ public class ParametersScene {
             HBox optionsLayout = new HBox(5, begin, contains, ends);
             optionsLayout.setAlignment(Pos.CENTER_LEFT);
             VBox aux = new VBox(5, inputsLayout, optionsLayout);
+            aux.setId(String.valueOf(ids));
+            map.put(ids,aux);
+            System.out.println(ids);
             paramsLayout.getChildren().add(aux);
         });
         HBox addLayout = new HBox(addRule);
@@ -147,18 +198,20 @@ public class ParametersScene {
 
         //botones cancelar y guardar
         Button cancelButton = new Button("Cancelar");
+        cancelButton.getStyleClass().add("button");        
         cancelButton.setOnAction(e->{
             stage.setScene(rootScene);
         });
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button("Guardar");
+        saveButton.getStyleClass().add("button");
         saveButton.setOnAction(e->{
             cancelButton.setDisable(true);
             paramsLayout.setDisable(true);
-            addRule.setDisable(true);;
+            addRule.setDisable(true);
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() {
-                    List<String> rulesToSave = getRulesToSave(); 
+                    List<String> rulesToSave = getRulesToSave(map); 
                     controller.saveRules(rulesToSave);
                     return null;
                 }
@@ -177,25 +230,27 @@ public class ParametersScene {
 
         //creamos escena
         ScrollPane scrollPane = new ScrollPane(root);
+        scrollPane.setPadding(new Insets(20));
         scrollPane.setFitToWidth(true);
-        return scene = new Scene(scrollPane, width,height);
+        scrollPane.getStyleClass().add("scroll-pane");
+        scene = new Scene(scrollPane, width,height);
+        //apliamos css
+        scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+        //retornamos
+        return scene;
     }
 
-    public List<String> getRulesToSave(){
+    public List<String> getRulesToSave(Map<Integer,VBox> map){
         List<String> rulesToSave = new ArrayList<>();
         //recuperamos elementos de cada id y armamos el string
-        for (int i=1; i<ids+1; i++){
-            //botones
-            boolean beginFlag = ((RadioButton)this.scene.lookup("#bb"+String.valueOf(i))).isSelected();
-            boolean containsFlag = ((RadioButton)this.scene.lookup("#bc"+String.valueOf(i))).isSelected();
-            boolean endsFlag = ((RadioButton)this.scene.lookup("#be"+String.valueOf(i))).isSelected();
-            //expresion
-            String expresion = ((TextArea)this.scene.lookup("#e"+String.valueOf(i))).getText().replaceAll("\\s$","");
-            //clasificacion
-            String clasification = ((TextArea)this.scene.lookup("#c"+String.valueOf(i))).getText().replaceAll("\\s$","");
-            if(expresion.equals("") || clasification.equals("")){
-                continue;
-            }else{           
+        map.forEach((k,v)->{
+            String expresion = ((TextArea)((HBox)v.getChildren().get(0)).getChildren().get(0)).getText();
+            String clasification = ((TextArea)(((HBox)((HBox)v.getChildren().get(0)).getChildren().get(1))).getChildren().get(0)).getText();
+            //sacamos inicio, contiene, termina
+            boolean beginFlag =((RadioButton)((HBox)v.getChildren().get(1)).getChildren().get(0)).isSelected();
+            boolean containsFlag =((RadioButton)((HBox)v.getChildren().get(1)).getChildren().get(1)).isSelected();
+            boolean endsFlag =((RadioButton)((HBox)v.getChildren().get(1)).getChildren().get(2)).isSelected();
+            if(!expresion.equals("") && !clasification.equals("")){
                 //convertimos y agg a array
                 String rule = "";
                 if(beginFlag){
@@ -217,10 +272,10 @@ public class ParametersScene {
                     rule += " - ";
                     rule += clasification;
                 }
-                System.out.println(rule);
                 rulesToSave.add(rule);
             }
-        }
+        });
+        
         rulesToSave.forEach(System.out::println);
         return rulesToSave;
     }
@@ -246,7 +301,7 @@ public class ParametersScene {
             return expresion.replace("^", "").replace(".*", "");
         }else if(expresion.startsWith(".*")){
             return expresion.replace(".*", "");
-        }else if(expresion.endsWith("$")){
+        }else if(expresion.trim().endsWith("$")){
             return expresion.replace(".*","").replace("$", "");
         }else{
             return expresion;
