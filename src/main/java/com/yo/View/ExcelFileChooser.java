@@ -14,6 +14,11 @@ public class ExcelFileChooser {
         chooser = new FileChooser();
         this.chooser.setTitle("Seleccione donde guardar el PDF");
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("excel", "*.xlsx"));
+        
+    }
+
+    public void setInitialName(String name){
+        chooser.setInitialFileName(name);
     }
 
     public String saveExcel(){

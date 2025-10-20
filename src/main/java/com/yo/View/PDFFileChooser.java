@@ -22,7 +22,6 @@ public class PDFFileChooser {
     public String openFile(){
         File file = chooser.showOpenDialog(stage);
         return file.getAbsolutePath();
-        
     }
 
     

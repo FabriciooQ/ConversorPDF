@@ -3,6 +3,8 @@ package com.yo.View;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.yo.Controller.TransformationController;
 
@@ -83,7 +85,6 @@ public class MainScene {
         //seleccion de carpeta para guardar archivo
         Label labelSaveFile = new Label("Seleccionar donde se va a guardar el excel");
         labelSaveFile.getStyleClass().add("label");
-        
         textAreaDestination.getStyleClass().add("text-area");
         textAreaDestination.setMaxWidth(285);
         textAreaDestination.setMaxHeight(1);
@@ -95,6 +96,9 @@ public class MainScene {
         butonSelectDestination.setGraphic(folderLogoExcel);
         butonSelectDestination.getStyleClass().add("button");
         butonSelectDestination.setOnAction(e -> {
+            //extraemos nombre
+            String initString = textAreaDestination.getText().replaceAll("^.*\\\\", "");
+            chooserExcel.setInitialName(initString);
             String filePathDestination = chooserExcel.saveExcel();
             textAreaDestination.setText(filePathDestination);
         });

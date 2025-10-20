@@ -84,11 +84,11 @@ public class ParametersScene {
             //box horizontal de arriba
             TextArea expresionArea = new TextArea();
             expresionArea.getStyleClass().add("inputs");
-            expresionArea.setText(parseExpresion(this.initialRules.get(i)[0].trim()));
+            expresionArea.setText(parseExpresion(this.initialRules.get(i)[0]));
             expresionArea.setMaxHeight(1);
             TextArea clasificationArea = new TextArea();
             clasificationArea.getStyleClass().add("inputs");
-            clasificationArea.setText(parseExpresion(this.initialRules.get(i)[1].trim()));
+            clasificationArea.setText(this.initialRules.get(i)[1]);
             clasificationArea.setMaxHeight(1);
             Button delete = new Button();
             delete.getStyleClass().addAll("button");
@@ -128,6 +128,7 @@ public class ParametersScene {
                     break;
                 case 3:
                     ends.setSelected(true);
+                    break;
                 default:
                     break;
             }
@@ -260,12 +261,14 @@ public class ParametersScene {
                     rule += " - ";
                     rule += clasification;
                 }else if(containsFlag){
+                    System.out.println("contain");
                     rule += ".*";
                     rule += expresion;
                     rule += ".*";
                     rule += " - ";
                     rule += clasification;
                 }else if(endsFlag){
+                    System.out.println("end");
                     rule += ".*";
                     rule += expresion;
                     rule += "$";
@@ -285,24 +288,24 @@ public class ParametersScene {
     }
 
     private int getOption(String line){
-       if(line.startsWith("^")){
+        if(line.endsWith("$")){
+        return 3;
+        }else if(line.startsWith("^")){
         return 1;
        }else if(line.startsWith(".*")){
         return 2;
-       }else if(line.endsWith("$")){
-        return 3;
        }else{
         return 0;
        }
     }
 
     private String parseExpresion(String expresion){
-        if(expresion.startsWith("^")){
+        if(expresion.endsWith("$")){
+            return expresion.replace(".*","").replace("$", "");
+        }else if(expresion.startsWith("^")){
             return expresion.replace("^", "").replace(".*", "");
         }else if(expresion.startsWith(".*")){
             return expresion.replace(".*", "");
-        }else if(expresion.trim().endsWith("$")){
-            return expresion.replace(".*","").replace("$", "");
         }else{
             return expresion;
         }
