@@ -3,7 +3,6 @@ package com.yo.Model;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
@@ -16,7 +15,12 @@ public class PDFReader {
     public PDFReader(String path){
         this.path = path;
         this.pdf = loadPDF();
-        this.textStripper = new PDFTextStripper();
+        try {
+            this.textStripper = new PDFTextStripper();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         this.numberOfPages = pdf.getNumberOfPages();
     }
 
@@ -27,7 +31,7 @@ public class PDFReader {
     private PDDocument loadPDF(){
         File file = new File(this.path);
         try {
-            PDDocument pdf = Loader.loadPDF(file);
+            PDDocument pdf = PDDocument.load(file);
             return pdf;
         } catch (IOException e) {
             // TODO Auto-generated catch block

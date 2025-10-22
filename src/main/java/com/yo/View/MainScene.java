@@ -128,7 +128,6 @@ public class MainScene {
         buttonClasification.getStyleClass().addAll("check-box");
         buttonClasification.setOnAction(e->{
            buttonParams.setDisable(!buttonParams.isDisable());
-           System.out.println(buttonClasification.isSelected());
         });
         //agregamos
         HBox bankSelectorLayout = new HBox(7, labelbankSelector, bankSelector, buttonClasification, buttonParams);

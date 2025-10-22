@@ -176,7 +176,7 @@ public class WriterXSLX {
             union = 7;
         }
         sheet.addMergedRegion(new CellRangeAddress(0,0,0,union));
-        System.out.println("    Titulo seteado");
+        //System.out.println("    Titulo seteado");
 
         //cell style negrita para todos los datos restantes
         XSSFCellStyle boldStyle = wb.createCellStyle();
@@ -191,7 +191,7 @@ public class WriterXSLX {
         cellLugar.setCellStyle(boldStyle);
         cellLugar.setCellValue(headerMap.get("lugar"));
         sheet.addMergedRegion(new CellRangeAddress(1,1,0,1));
-        System.out.println("    lugar seteado");
+        //System.out.println("    lugar seteado");
 
 
         //cuit (cabecera y valor)
@@ -202,7 +202,7 @@ public class WriterXSLX {
         cellLabelCuit.setCellValue("cuit");
         XSSFCell cellCuit = rowCuit.createCell(1);
         cellCuit.setCellValue(headerMap.get("cuit"));
-        System.out.println("    cuit seteado");
+        //System.out.println("    cuit seteado");
 
 
         //IVA (cabecera y valor)
@@ -213,7 +213,7 @@ public class WriterXSLX {
         cellLabelIva.setCellValue("IVA");
         XSSFCell cellIva = rowIva.createCell(1);
         cellIva.setCellValue(headerMap.get("iva"));
-        System.out.println("    IVA seteado");
+        //System.out.println("    IVA seteado");
 
         
         //numero de cuenta (cabecera y valor)
@@ -224,7 +224,7 @@ public class WriterXSLX {
         cellLabelTipoCuenta.setCellValue("Tipo de cuenta");
         XSSFCell cellTipoCuenta = rowTipoCuenta.createCell(1);
         cellTipoCuenta.setCellValue(headerMap.get("tipo de cuenta"));
-        System.out.println("    Numero cuenta seteado");
+        //System.out.println("    Numero cuenta seteado");
 
 
         //tipo de cuenta (cabecera y valor)
@@ -235,7 +235,7 @@ public class WriterXSLX {
         cellLabelCuenta.setCellValue("n° de cuenta");
         XSSFCell cellCuenta = rowCuenta.createCell(1);
         cellCuenta.setCellValue(headerMap.get("cuenta"));
-        System.out.println("    Tipo cuenta seteado");
+        //System.out.println("    Tipo cuenta seteado");
 
 
         //inicio de periodo (cabecera y valor)
@@ -246,7 +246,7 @@ public class WriterXSLX {
         cellLabelPeriodoInicio.setCellValue("inicio de periodo");
         XSSFCell cellPeriodoInicio = rowPeriodoInicio.createCell(1);
         cellPeriodoInicio.setCellValue(headerMap.get("inicio de periodo"));
-        System.out.println("    Inicio periodo seteado");
+        //System.out.println("    Inicio periodo seteado");
 
 
         //fin de periodo (cabecera y valor)
@@ -257,7 +257,7 @@ public class WriterXSLX {
         cellLabelPeriodoFin.setCellValue("fin de periodo");
         XSSFCell cellPeriodoFin = rowPeriodoFin.createCell(1);
         cellPeriodoFin.setCellValue(headerMap.get("fin de periodo"));
-        System.out.println("    Fin periodo seteado");
+        //System.out.println("    Fin periodo seteado");
 
 
         //saldo inicial (PDF) (cabecera y valor)
@@ -268,7 +268,7 @@ public class WriterXSLX {
         cellLabelSaldoInicial.setCellValue("saldo inicial (PDF)");
         XSSFCell cellSaldoinicial = rowSaldoInicial.createCell(1);
         cellSaldoinicial.setCellValue(headerMap.get("saldo inicial"));
-        System.out.println("    Saldo inicial seteado");
+        //System.out.println("    Saldo inicial seteado");
 
 
         //saldo final (PDF) (cabecera y valor)
@@ -279,7 +279,7 @@ public class WriterXSLX {
         cellLabelSaldoFinal.setCellValue("saldo final (PDF)");
         XSSFCell cellSaldoFinal = rowSaldoFinal.createCell(1);
         cellSaldoFinal.setCellValue(headerMap.get("saldo final"));
-        System.out.println("    Saldo final seteado");
+        //System.out.println("    Saldo final seteado");
 
     }
     

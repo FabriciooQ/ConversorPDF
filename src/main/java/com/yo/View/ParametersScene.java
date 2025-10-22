@@ -167,7 +167,6 @@ public class ParametersScene {
                 VBox auxBox = (VBox)((Button)ev.getSource()).getParent().getParent().getParent();
                 paramsLayout.getChildren().remove(auxBox);
                 map.remove(Integer.valueOf(auxBox.getId()));
-                System.out.println(map.containsKey(Integer.valueOf(auxBox.getId())));
             });
             delete.setPadding(new Insets(20));
             HBox auxLayout = new HBox (25, clasificationArea, delete);
@@ -190,7 +189,7 @@ public class ParametersScene {
             VBox aux = new VBox(5, inputsLayout, optionsLayout);
             aux.setId(String.valueOf(ids));
             map.put(ids,aux);
-            System.out.println(ids);
+            //System.out.println(ids);
             paramsLayout.getChildren().add(aux);
         });
         HBox addLayout = new HBox(addRule);
@@ -261,14 +260,12 @@ public class ParametersScene {
                     rule += " - ";
                     rule += clasification;
                 }else if(containsFlag){
-                    System.out.println("contain");
                     rule += ".*";
                     rule += expresion;
                     rule += ".*";
                     rule += " - ";
                     rule += clasification;
                 }else if(endsFlag){
-                    System.out.println("end");
                     rule += ".*";
                     rule += expresion;
                     rule += "$";
@@ -278,8 +275,6 @@ public class ParametersScene {
                 rulesToSave.add(rule);
             }
         });
-        
-        rulesToSave.forEach(System.out::println);
         return rulesToSave;
     }
 

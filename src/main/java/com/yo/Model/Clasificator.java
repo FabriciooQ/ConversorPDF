@@ -30,7 +30,7 @@ public class Clasificator {
             for(int i=0; i<rules.size(); i++){
                 if(v[1].matches(rules.get(i)[0].trim())){
                     res.put(k, rules .get(i)[1].trim());
-                    System.out.println(res.get(k));
+                    //System.out.println(res.get(k));
                     break;
                 }
             }if(!res.containsKey(k)){
