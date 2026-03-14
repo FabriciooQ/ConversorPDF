@@ -52,8 +52,8 @@ public class TxtReader {
 
         for(int i=0; i<lines.size(); i++){
             String[] cad = lines.get(i).split("-");
-            cad[0] = cad[0].replaceAll(" ","").replaceAll("\\p{Cntrl}", "").strip(); // \\p{Cntrl} → cualquier carácter de control (LF, CR, tab, etc.). strip()elimina espacios al inicio y final, incluyendo Unicode.
-            cad[1] = cad[1].replaceAll(" ","").replaceAll("\\p{Cntrl}", "").strip();
+            cad[0] = cad[0].trim().replaceAll("\\p{Cntrl}", "").strip(); // \\p{Cntrl} → cualquier carácter de control (LF, CR, tab, etc.). strip()elimina espacios al inicio y final, incluyendo Unicode.
+            cad[1] = cad[1].trim().replaceAll(" ","").replaceAll("\\p{Cntrl}", "").strip();
             rules.put(i, cad);
         }           
     }   

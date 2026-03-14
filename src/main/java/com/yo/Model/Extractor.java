@@ -11,71 +11,45 @@ public class Extractor {
         String[] res = new String[6];
         //matcher general
         Matcher m;
-       
-        //FECHA Y DESCRIPCION  (FECHA GRUPO 1, DESCRIPCION GRUPO 2))
-        //Pattern para cadenas tipo: 02/01/23 ECHEQ 48 HS. NRO.      234 000 (si tiene origen)
-        Pattern p1Descr = Pattern.compile("^(\\d\\d/\\d\\d/\\d\\d)\\s(.*\\s{2,}\\d+)");
-        //Pattern para cadenas tipo: 02/01/23 IMP. DEB. LEY 2513 REDUC. 000 (si tiene origen)
-        Pattern p2Descr = Pattern.compile("^(\\d\\d/\\d\\d/\\d\\d)\\s([A-Z .]+\\s[0-9]+\\s[A-Z.]+)");
-        //Pattern para cadenas tipo IMP. CRE. LEY 25413 REDUC. 000 (si tiene origen)
-        Pattern p3Descr = Pattern.compile("^(\\d\\d/\\d\\d/\\d\\d)\\s([A-Z. ]+)");
+        
+        //Patern que captura con origen
+        Pattern patternOrigen = Pattern.compile("^(\\d{2}/\\d{2}/\\d{2})\\s(.*)\\s(\\d{4})\\s([0-9.,-]+)\\s([0-9,.-]+)$");
+        //Patern que captura sin origen
+        Pattern pattern = Pattern.compile("^(\\d{2}/\\d{2}/\\d{2})\\s(.*)\\s([0-9.,-]+)\\s([0-9,.-]+)$");
+  
         //captura
-        m = p1Descr.matcher(line.trim());
+        m = patternOrigen.matcher(line.trim());
         if(m.find()){
-            res[0] = m.group(1);
-            res[1] = m.group(2).trim();
-        }else{
-            m = p2Descr.matcher(line.trim());
-            if(m.find()){
-                res[0] = m.group(1);
-                res[1] = m.group(2).trim();
+            res[0] = m.group(1);    //fecha
+            res[1] = m.group(2).trim(); //descripcion
+            res[2] = m.group(3);    //origen
+            //si el siguiente grupo empieza con - es debito si no saldo
+            if(m.group(4).startsWith("-")){
+                res[3] = null;  //credito
+                res[4] = m.group(4);    //debito
             }else{
-                m = p3Descr.matcher(line.trim());
-                if(m.find()){
-                    res[0] = m.group(1);
-                    res[1] = m.group(2).trim();
+                res[3] = m.group(4);
+                res[4] = null;
                 }
-            }
-        }
-
-        //ORIGEN
-        //Pattern para cadenas tipo 02/01/23 ECHEQ 48 HS. NRO.      235 000 (origen es 3er grupo)
-        Pattern p1Origin = Pattern.compile("^(\\d\\d/\\d\\d/\\d\\d)\\s(.*\\s{2,}\\d+)\\s(\\d+)");
-        //Pattern para cadenas tipo IMP. DEB. LEY 25413 REDUC. 000 (origen en 3er grupo)
-        Pattern p2Origin = Pattern.compile("^(\\d\\d/\\d\\d/\\d\\d)\\s([A-Z .]+\\s[0-9]+\\s[A-Z.]+)\\s(\\d+)");
-        //Pattern para cadenas tipo IMP. CRE. LEY 25413 REDUC. 000 (origen en 3er grupo)
-        Pattern p3Origin = Pattern.compile("^(\\d\\d/\\d\\d/\\d\\d)\\s([A-Z. ]+)\\s(\\d+)\\s[0-9-]");
-        //captura
-        m = p1Origin.matcher(line.trim());
-        if(m.find()){
-            res[2] = m.group(3);
+            res[5] = m.group(5).replaceFirst("-$", ""); //saldo
         }else{
-            m = p2Origin.matcher(line.trim());
+            m = pattern.matcher(line.trim());
             if(m.find()){
-                res[2] = m.group(3);
-            }else{
-                m = p3Origin.matcher(line.trim());
-                if(m.find()){
+                 res[0] = m.group(1);    //fecha
+                res[1] = m.group(2).trim(); //descripcion
+                res[3] = null;    //origen
+                //si el siguiente grupo empieza con - es debito si no saldo
+                if(m.group(3).startsWith("-")){
+                    res[3] = null;  //credito
+                    res[4] = m.group(3);    //debito
+                }else{
                     res[3] = m.group(3);
+                    res[4] = null;
                 }
+                //si el saldo termina con - lo borramos es un error que trae el pdf
+                res[5] = m.group(4).replaceFirst("-$", ""); //saldo
             }
         }
-
-        //SALDO Y DEBITO/CREDITO
-        //Pattern debito/credito grupo 1, saldo grupo 2
-        Pattern p1Balance = Pattern.compile("([0-9.,-]+)\\s([0-9,.]+)$");
-        //capturar
-        m = p1Balance.matcher(line.trim());
-        if(m.find()){
-            //System.out.println(m.groupCount());
-            String creditOrDebit = m.group(1);
-            if(creditOrDebit.startsWith("-")){
-                res[4] = m.group(1);
-            }else{
-                res[3] = m.group(2);
-            }
-            res[5] = m.group(2);
-        }  
 
         //retornamos resultado
         return res;

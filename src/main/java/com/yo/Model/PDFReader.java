@@ -24,6 +24,10 @@ public class PDFReader {
         return this.numberOfPages;
     }
 
+    public PDDocument getPDF(){
+        return this.pdf;
+    }
+
     private PDDocument loadPDF(){
         File file = new File(this.path);
         try {

@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import com.yo.Controller.TransformationController;
 
 import javafx.concurrent.Task;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -114,7 +115,7 @@ public class MainScene {
         labelbankSelector.getStyleClass().add("label");
         ChoiceBox<String> bankSelector = new ChoiceBox<>();
         bankSelector.getStyleClass().add("combo-box");
-        bankSelector.getItems().addAll("Galicia");
+        bankSelector.getItems().addAll(controller.getNombresBancos());
         bankSelector.setValue("Galicia");
         Button buttonParams = new Button("Parametros");
         buttonParams.getStyleClass().add("button");
@@ -128,7 +129,6 @@ public class MainScene {
         buttonClasification.getStyleClass().addAll("check-box");
         buttonClasification.setOnAction(e->{
            buttonParams.setDisable(!buttonParams.isDisable());
-           System.out.println(buttonClasification.isSelected());
         });
         //agregamos
         HBox bankSelectorLayout = new HBox(7, labelbankSelector, bankSelector, buttonClasification, buttonParams);
@@ -195,9 +195,13 @@ public class MainScene {
         buttonConvertLayout.setAlignment(Pos.CENTER);
         root.getChildren().add(buttonConvertLayout);
 
+        
+        
         //creamos la escena y la seteamos al stage principal
         Scene scene = new Scene(root, width, height);
         scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+        
+  
         return scene;
 
     }

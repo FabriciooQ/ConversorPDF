@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.yo.Controller.TransformationController;
+import com.yo.Model.Rule;
 
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -39,16 +40,16 @@ public class ParametersScene {
     private Scene rootScene;
     private Scene scene;
     private TransformationController controller;
-    private Map<Integer,String[]> initialRules;
+    private List<Rule> rules;
     private int ids;
+    private List<Rule> rulesToAdd;
 
     public ParametersScene(Stage stage, Scene rootScene, TransformationController controller, double width, double height){
-        this.initialRules = new HashMap<>();
         this.stage = stage;
         this.rootScene = rootScene;
         this.controller = controller;
+        this.rules = this.controller.getRule();
         this.ids =  0;  
-        this.controller.loadRules(initialRules);
         this.scene = createScene(width, height);    
     }
 
@@ -70,25 +71,22 @@ public class ParametersScene {
         clasificationText.getStyleClass().add("subtitle");
         HBox tableHeader = new HBox(120, expresionText, clasificationText);
         tableHeader.setAlignment(Pos.CENTER);
-        tableHeader.setAlignment(Pos.CENTER);
         root.getChildren().add(tableHeader);
         
         //box parametros
         VBox paramsLayout = new VBox(9);
-        //map que guarda los vbox de cada parametro
-        Map<Integer, VBox> map = new HashMap<>();
         //agregamos por cada parametro en el .txt una entrada
-        for(int i=0; i<this.initialRules.size(); i++){
-            //contador para ids
+        rules.forEach(rule->{
+            //contador ids para el map que contiene la vbox
             ids++;
             //box horizontal de arriba
             TextArea expresionArea = new TextArea();
             expresionArea.getStyleClass().add("inputs");
-            expresionArea.setText(parseExpresion(this.initialRules.get(i)[0]));
+            expresionArea.setText(parseExpresion(rule.getExpresion()));
             expresionArea.setMaxHeight(1);
             TextArea clasificationArea = new TextArea();
             clasificationArea.getStyleClass().add("inputs");
-            clasificationArea.setText(this.initialRules.get(i)[1]);
+            clasificationArea.setText(rule.getTexto());
             clasificationArea.setMaxHeight(1);
             Button delete = new Button();
             delete.getStyleClass().addAll("button");
@@ -100,9 +98,13 @@ public class ParametersScene {
             delete.setGraphic(imageView); 
             delete.setPadding(new Insets(0));
             delete.setOnAction(ev->{
-                VBox auxBox = (VBox)((Button)ev.getSource()).getParent().getParent().getParent();
-                paramsLayout.getChildren().remove(auxBox);
-                map.remove(Integer.valueOf(auxBox.getId()));
+                //borramos regla de la bd
+                boolean flag = this.controller.deleteRule(rule);
+                if(flag){
+                    //borramos VBox del panel
+                    VBox auxBox = (VBox)((Button)ev.getSource()).getParent().getParent().getParent();
+                    paramsLayout.getChildren().remove(auxBox);
+                }
             });
             delete.setPadding(new Insets(20));
             HBox auxLayout = new HBox (25, clasificationArea, delete);
@@ -118,7 +120,7 @@ public class ParametersScene {
             begin.setToggleGroup(group);
             contains.setToggleGroup(group);
             ends.setToggleGroup(group);
-            int option = getOption(initialRules.get(i)[0]);
+            int option = getOption(rule.getExpresion());
             switch (option) {
                 case 1:
                     begin.setSelected(true);                   
@@ -137,9 +139,10 @@ public class ParametersScene {
             //agregamos a los vbox
             VBox aux = new VBox(5, inputsLayout, optionsLayout);
             aux.setId(String.valueOf(ids));
-            map.put(ids,aux);
             paramsLayout.getChildren().add(aux);
-        } 
+
+        });
+        
         root.getChildren().add(paramsLayout);
 
         //boton de agregar regla
@@ -164,10 +167,10 @@ public class ParametersScene {
             imageView.setPreserveRatio(true);
             delete.setGraphic(imageView); 
             delete.setOnAction(ev->{
+                //borramos VBox del panel
                 VBox auxBox = (VBox)((Button)ev.getSource()).getParent().getParent().getParent();
                 paramsLayout.getChildren().remove(auxBox);
-                map.remove(Integer.valueOf(auxBox.getId()));
-                System.out.println(map.containsKey(Integer.valueOf(auxBox.getId())));
+                
             });
             delete.setPadding(new Insets(20));
             HBox auxLayout = new HBox (25, clasificationArea, delete);
@@ -189,8 +192,7 @@ public class ParametersScene {
             optionsLayout.setAlignment(Pos.CENTER_LEFT);
             VBox aux = new VBox(5, inputsLayout, optionsLayout);
             aux.setId(String.valueOf(ids));
-            map.put(ids,aux);
-            System.out.println(ids);
+            //System.out.println(ids);
             paramsLayout.getChildren().add(aux);
         });
         HBox addLayout = new HBox(addRule);
@@ -261,14 +263,12 @@ public class ParametersScene {
                     rule += " - ";
                     rule += clasification;
                 }else if(containsFlag){
-                    System.out.println("contain");
                     rule += ".*";
                     rule += expresion;
                     rule += ".*";
                     rule += " - ";
                     rule += clasification;
                 }else if(endsFlag){
-                    System.out.println("end");
                     rule += ".*";
                     rule += expresion;
                     rule += "$";
@@ -279,7 +279,6 @@ public class ParametersScene {
             }
         });
         
-        rulesToSave.forEach(System.out::println);
         return rulesToSave;
     }
 

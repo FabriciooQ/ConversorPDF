@@ -1,14 +1,16 @@
 com\yo\View\MainScene$1.class
+com\yo\Model\Rule.class
 com\yo\View\ParametersScene$1.class
 com\yo\Model\TxtReader.class
 com\yo\Model\Extractor.class
 com\yo\pruebas\peueba.class
 com\yo\pruebas\PruebaReader.class
 com\yo\View\ParametersScene.class
+com\yo\App.class
 com\yo\pruebas\PruebaContentMultiLine.class
 com\yo\View\PDFFileChooser.class
+com\yo\Model\DatabaseAdministrator.class
 com\yo\Controller\TransformationController.class
-com\yo\View\App.class
 com\yo\Model\WriterXSLX.class
 com\yo\pruebas\clasificacion.class
 com\yo\Model\PDFReader.class
@@ -18,3 +20,4 @@ com\yo\View\ExcelFileChooser.class
 com\yo\Model\Clasificator.class
 com\yo\pruebas\PruebaContentInLine.class
 com\yo\View\MainScene.class
+com\yo\Model\Banco.class

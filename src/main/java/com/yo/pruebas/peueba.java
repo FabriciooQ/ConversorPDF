@@ -1,28 +1,23 @@
 package com.yo.pruebas;
 
 import java.awt.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.yo.Model.Banco;
+import com.yo.Model.DatabaseAdministrator;
 import com.yo.Model.TxtReader;
 
 public class peueba {
     public static void main(String[] args) {
-        TxtReader r = new TxtReader();
-        Map<Integer, String[]> rules = new HashMap<>();
-        r.loadRules(rules);
+        DatabaseAdministrator dbAdmin = new DatabaseAdministrator();
+        Banco banco = new Banco("prueba");
 
-        rules.forEach((k,v) ->{
-            System.out.println(Arrays.toString(v));
-            if(v[0].endsWith("$")){
-                System.out.println(v[0].replace(".*","").replace("$", ""));
-            }
-        
-        
-        
-        });
-
+        dbAdmin.saveBanco(banco);
     }
     
 }

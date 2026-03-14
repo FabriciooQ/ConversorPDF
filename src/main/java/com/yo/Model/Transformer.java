@@ -23,23 +23,23 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Transformer {
     public static void transform( String originPath, String destinationPath, boolean flagClasification ){
-        System.out.println("Empezando");
+        //System.out.println("Empezando");
         //lector de pdf
         PDFReader reader = new PDFReader(originPath);
-        System.out.println("PDF Reader creado");
+        //System.out.println("PDF Reader creado");
 
         //parseador de datos 
         Parser parser = new Parser();
-        System.out.println("Parser creado");
+        //System.out.println("Parser creado");
 
         //definimos el writer para el xlsx
         WriterXSLX writer = null;
-        System.out.println("writer creado");
+        //System.out.println("writer creado");
 
 
         //clasificador
         Clasificator clasificator = new Clasificator();        
-        System.out.println("clasificator creado");
+        //System.out.println("clasificator creado");
 
         //numero de paginas del documento (para poder leerlas)
         int numberOfPages = reader.getNumberOfPages();
@@ -47,7 +47,7 @@ public class Transformer {
         try{
             //creamos objeto que representa el archivo excel
             XSSFWorkbook wb = new XSSFWorkbook();
-            System.out.println("excel creado");
+            //System.out.println("excel creado");
             
             //FileOutputStream para que se pueda escribir mediante ese stream en el excel
             FileOutputStream os = new FileOutputStream(destinationPath);
@@ -60,29 +60,29 @@ public class Transformer {
 
         //creo hoja de trabajo en el excel
         writer.createSheet("Hoja 1");
-        System.out.println("Hoja y archivo creado");
+        //System.out.println("Hoja y archivo creado");
 
         //leo y seteo cabecera en el excel
         String[] firstPage = reader.readPage(1);
         Map<String, String> headerMap = parser.parseHeader(firstPage);
         writer.setHeader(headerMap, flagClasification);
         //debugging
-        System.out.println("Cabecera convertida");
+        //System.out.println("Cabecera convertida");
 
         //leo y seteo la cabecera de la tabla
         Map<String,String> tableHeader = parser.parseTableHeader(firstPage);
         writer.setTableHeader(tableHeader, flagClasification); 
         //debugging
-        System.out.println("Cabecera de tabla convertida");
+        //System.out.println("Cabecera de tabla convertida");
 
         //leo datos de tabla en primera pagina y seteo en el excel
         Map<Integer,String[]> tableData = parser.parseContentTable(firstPage, true);
         //si se clasifica
         if(flagClasification){
-            System.out.println(flagClasification);
+            //System.out.println(flagClasification);
             Map<Integer, String> clasificationsMap = clasificator.classify(tableData);   
             //debug 
-            System.out.println(clasificationsMap.size());
+            //System.out.println(clasificationsMap.size());
             writer.setTableContent(tableData, clasificationsMap);
         }else{
             writer.setTableContent(tableData, null);
@@ -100,7 +100,7 @@ public class Transformer {
                     writer.setTableContent(data, null);
                 }
                 //debugging
-                System.out.println("Pagina " + i + " de " + numberOfPages + " convertida");
+                //System.out.println("Pagina " + i + " de " + numberOfPages + " convertida");
             }
         }
 
@@ -108,13 +108,13 @@ public class Transformer {
         //escribo cosas
         writer.write();
         //debugging
-        System.out.println("Datos escritos en el excel");
+        //System.out.println("Datos escritos en el excel");
 
         //cerramos cosas
         reader.closeAll();
         writer.closeAll();
         //debugging
-        System.out.println("Finalizado");
+        //System.out.println("Finalizado");
     }
 }
 
