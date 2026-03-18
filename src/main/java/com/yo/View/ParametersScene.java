@@ -70,7 +70,6 @@ public class ParametersScene {
         clasificationText.getStyleClass().add("subtitle");
         HBox tableHeader = new HBox(120, expresionText, clasificationText);
         tableHeader.setAlignment(Pos.CENTER);
-        tableHeader.setAlignment(Pos.CENTER);
         root.getChildren().add(tableHeader);
         
         //box parametros
