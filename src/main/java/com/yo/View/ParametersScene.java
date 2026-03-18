@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.yo.Controller.DatabaseController;
 import com.yo.Controller.TransformationController;
 import com.yo.Model.Rule;
 
@@ -40,6 +41,7 @@ public class ParametersScene {
     private Scene rootScene;
     private Scene scene;
     private TransformationController controller;
+    private DatabaseController dbController;
     private List<Rule> rules;
     private int ids;
     private List<Rule> rulesToAdd;
@@ -149,6 +151,9 @@ public class ParametersScene {
         Button addRule = new Button("Agregar");
         addRule.getStyleClass().addAll("button","secondary");
         addRule.setOnAction(e -> {
+            //creamos una rule vacia para setearla despues
+            Rule nuevaRegla = new Rule();
+            rulesToAdd.add(nuevaRegla);
             //sumamos en 1 el id de reglas
             this.ids++;
             //box horizontal de arriba
@@ -214,8 +219,8 @@ public class ParametersScene {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() {
-                    List<String> rulesToSave = getRulesToSave(map); 
-                    controller.saveRules(rulesToSave);
+                //List<String> rulesToSave = getRulesToSave(); 
+                    //controller.saveRules(rulesToSave);
                     return null;
                 }
             };
@@ -280,6 +285,10 @@ public class ParametersScene {
         });
         
         return rulesToSave;
+    }
+
+    private String parseRule(Rule rule, VBox vbox){
+        return null;
     }
 
     public Scene getScene(){

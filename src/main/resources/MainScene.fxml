@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.app.MainScene"
+      alignment="CENTER">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <HBox alignment="CENTER">
+        <Text text = "Conversor de PDF"
+            styleClass = "title"/>
+    </HBox>
+
+    <Label text="Seleccionar PDF"
+        styleClass="label"/>
+    <TextArea prefWidth="285" prefHeight="20"/>
+    <Button fx:id="buttonSelectPDF" styleClass="button"/>
+
+
+
+
+    <Label text="Login"/>
+
+    <TextField fx:id="usernameField"
+               promptText="Usuario"/>
+
+    <Button text="Ingresar"
+            onAction="#login"/>
+
+</VBox>

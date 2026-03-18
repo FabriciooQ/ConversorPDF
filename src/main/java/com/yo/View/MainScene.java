@@ -121,9 +121,7 @@ public class MainScene {
         buttonParams.getStyleClass().add("button");
         buttonParams.setDisable(true);
         buttonParams.setOnAction(e->{
-            ParametersScene parametersScene = new ParametersScene(this.stage,this.scene,this.controller, width, height);
-            Scene paramScene = parametersScene.getScene();
-            stage.setScene(paramScene);
+            stage.setScene();
         });
         CheckBox buttonClasification = new CheckBox("Clasificar");
         buttonClasification.getStyleClass().addAll("check-box");
@@ -206,5 +204,6 @@ public class MainScene {
 
     }
 
+    
     
 }

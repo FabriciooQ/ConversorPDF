@@ -21,8 +21,19 @@ public class DatabaseAdministrator{
         this.configuration = new Configuration();
         this.configuration.addAnnotatedClass(com.yo.Model.Rule.class);
         this.configuration.addAnnotatedClass(com.yo.Model.Banco.class);
+        this.configuration.addAnnotatedClass(com.yo.Model.OrdenRegla.class);
         this.configuration.configure();
         this.factory = configuration.buildSessionFactory();
+    }
+
+    public List<OrdenRegla> getOrdenReglasPerBank(int idBank){
+        Session session = this.factory.openSession();
+        List<OrdenRegla> reglas = session.createSelectionQuery("SELECT o FROM OrdenRegla o JOIN o.regla r WHERE o.banco.id = :idBank ORDER BY o.orden", OrdenRegla.class)
+            .setParameter("idBank", idBank)
+            .list();
+
+        session.close();
+        return reglas;
     }
 
     public void saveBanco(Banco banco){
@@ -67,6 +78,12 @@ public class DatabaseAdministrator{
             return null;
         }
 
+    }
+
+    public Banco getBanco(int id){
+        Session session = this.factory.openSession();
+        session.createSelectionQuery("FROM Banco where id like :id", Banco.class);
+        return null;
     }
 
     public List<Banco> getBancos(){

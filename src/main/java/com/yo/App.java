@@ -9,9 +9,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import com.yo.Controller.TransformationController;
+import com.yo.Controller.DatabaseController;
 import com.yo.Model.Banco;
 import com.yo.Model.DatabaseAdministrator;
 import com.yo.View.MainScene;
+import com.yo.View.ParameterSceneTable;
+import com.yo.pruebas.peueba;
 
 import javafx.application.Application;
 import javafx.concurrent.Task;
@@ -37,15 +40,23 @@ import javafx.stage.Stage;
 public class App extends Application{
     public static void main(String[] args) {       
         //metodo que pertenece a la clase Application y inicializa el entorno de javafx
+
         launch(args); // esto arranca el JavaFX Application Thread
+        //peueba prueba = new peueba();
+        //prueba.run();
     }
     
     @Override
     //Stage seria la windows de la interfaz, el Stage recibido por parametro representa la ventana principal
     //de la GUI
     public void start(Stage primaryStage) {
-        //creamos controller
-        TransformationController controller = new TransformationController();
+        //creamos el sceneManager
+
+
+        //creamos controllers
+/*         TransformationController transformationController = new TransformationController();
+        DatabaseController databaseController = new DatabaseController();
+
         
         primaryStage.setResizable(false);
         //seteamos nombre y icono
@@ -53,13 +64,18 @@ public class App extends Application{
         Image image = new Image(getClass().getResourceAsStream("/img/logo.png"));
         primaryStage.getIcons().add(image);
         
-        //creamos scena principal
-        MainScene main = new MainScene(primaryStage, controller, 450, 450);
+        //creamos escena de de parametros
+        ParameterSceneTable parameterScene = new ParameterSceneTable(primaryStage,)
+
+        //creamos escena principal
+        MainScene main = new MainScene(primaryStage, transformationController, 450, 450);
         Scene mainScene = main.getScene();
+
+
 
         //seteamos que cuando se cierrre se cierre la sessionFactory de hibernate
         primaryStage.setOnCloseRequest(event ->{
-            controller.closeDB();
+            databaseController.closeDB();
         });
         
         //seteamos la escena main
@@ -67,7 +83,7 @@ public class App extends Application{
 
             
         //mostramos
-        primaryStage.show();
+        primaryStage.show(); */
     }
 }
 

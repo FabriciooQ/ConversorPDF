@@ -15,6 +15,8 @@ com\yo\Model\WriterXSLX.class
 com\yo\pruebas\clasificacion.class
 com\yo\Model\PDFReader.class
 com\yo\Model\Parser.class
+com\yo\Model\OrdenRegla.class
+com\yo\Controller\DatabaseController.class
 com\yo\Model\Transformer.class
 com\yo\View\ExcelFileChooser.class
 com\yo\Model\Clasificator.class
