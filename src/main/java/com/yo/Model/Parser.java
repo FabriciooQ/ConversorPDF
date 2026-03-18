@@ -26,73 +26,28 @@ public class Parser {
     public Map<Integer, String[]> parseContentTable(String[] lineas, boolean firstPage){
         Map<Integer, String[]> data = new HashMap<>();
         int contRows = 0;
-        int index = 4;
+        int index = 56;
         //porque sino se confunde con los renglones que empiezan con fecha en el header
         if(firstPage){
-            index=31;
+            index=14;
         }
-        //pattern, matcher y cosas para multilinea, no se usa Extractor porque hay que iterar sobre muchos renglones
-        Pattern pDateMultilane = Pattern.compile("^(\\d\\d/\\d\\d/\\d\\d)\\s(.*)");
-        Matcher  m;
-        String description;
-
         while(index < lineas.length){
             //data del renglon de la tabla
-            String[] dataLine = new String[6]; 
-            //if para saber si todo esta en un mismo renglon
-            if(lineas[index].trim().matches("^\\d\\d/\\d\\d/\\d\\d.*") && 
-                (lineas[index].trim().matches(".*,\\d\\d$") || lineas[index].trim().matches(".*,\\d\\d-$"))){
-                dataLine = Extractor.extractDataInline(lineas[index]);
-
+            String[] dataLine = new String[6];
+          
+            dataLine = Extractor.extractDataInline(lineas[index]);
+            if(dataLine != null){
                 //agregamos datos al map con la llave del numero de fila
                 data.put(contRows, dataLine);
                 contRows++;
                 //sumamos index para ver la proxima fila
                 index++;
-            //si empieza con fecha pero no termina con numero tiene descripcion larga
-            }else if(lineas[index].trim().matches("^\\d\\d/\\d\\d/\\d\\d .*")){
-                description = "";
-                m = pDateMultilane.matcher(lineas[index]);
-                if(m.find()){
-                    dataLine[0] = m.group(1);
-                    description += m.group(2);
-                    index++;
-                    while(index<lineas.length){
-                        if(lineas[index].trim().matches(".*\\d,\\d\\d$") || lineas[index].trim().matches(".*\\d,\\d\\d-$")){
-                            break;
-                        }else{
-                            description += " " + lineas[index];
-                        }
-                        index++;
-                    }
-                    dataLine[1] = description.replaceAll("\n","").replaceAll("\r","").trim();
-                    String[] remainingData = lineas[index].trim().split("\\s+");
-                    if(remainingData.length == 3){
-                        dataLine[2] = remainingData[0];
-                        if(remainingData[1].startsWith("-")){
-                            dataLine[4] = remainingData[1];
-                        }else{
-                            dataLine[3] = remainingData[1];
-                        }
-                        dataLine[5] = remainingData[2];   
-                    }else{
-                        if(remainingData[0].startsWith("-")){
-                            dataLine[4] = remainingData[0];
-                        }else{
-                            dataLine[3] = remainingData[0];
-                        }
-                        dataLine[5] = remainingData[1];
-                    }
-                    data.put(contRows, dataLine);
-                    contRows++;
-                    index++;  
-                }
             }else{
-                //si no entra por los otros 2 llegamos al final de la tabla y salimos
+                //si el extractor devuelve null no coincidio con ninguna fila y se acabo la tabla en la pagina
                 break;
-
-            } 
-        }
+            }
+           
+        } 
         return data;
     }
         

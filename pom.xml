@@ -75,7 +75,7 @@
           <version>0.0.8</version>
           <configuration>
             <!-- Clase con el método main que extiende Application -->
-            <mainClass>com.yo.View.App</mainClass>
+            <mainClass>com.yo.App</mainClass>
           </configuration>
         </plugin>
           <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-shade-plugin -->
@@ -92,7 +92,7 @@
                 <configuration>
                   <transformers>
                     <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                      <mainClass>com.yo.View.App</mainClass>
+                      <mainClass>com.yo.App</mainClass>
                     </transformer>
                   </transformers>
                 </configuration>
@@ -104,7 +104,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.5.1</version>
         <configuration>
-          <mainClass>com.yo.View.App</mainClass>
+          <mainClass>com.yo.App</mainClass>
         </configuration>
       </plugin>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
@@ -131,7 +131,7 @@
           <configuration>
             <archive>
               <manifest>
-                <mainClass>com.yo.View.App</mainClass>
+                <mainClass>com.yo.App</mainClass>
               </manifest>
             </archive>
           </configuration>

@@ -56,20 +56,28 @@ public class Transformer {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
+        
         //creo hoja de trabajo en el excel
         writer.createSheet("Hoja 1");
-        //System.out.println("Hoja y archivo creado");
 
-        //leo y seteo cabecera en el excel
+       /*  //leo y seteo cabecera en el excel
         String[] firstPage = reader.readPage(1);
         Map<String, String> headerMap = parser.parseHeader(firstPage);
         writer.setHeader(headerMap, flagClasification);
         //debugging
-        //System.out.println("Cabecera convertida");
+        //System.out.println("Cabecera convertida"); */
+
+        //System.out.println("Hoja y archivo creado");
 
         //leo y seteo la cabecera de la tabla
-        Map<String,String> tableHeader = parser.parseTableHeader(firstPage);
+        String[] firstPage = reader.readPage(1);
+        Map<String,String> tableHeader = new HashMap<>();
+        tableHeader.put("Fecha", "Fecha");
+        tableHeader.put("Descripción", "Descripción");
+        tableHeader.put("Origen", "Origen");
+        tableHeader.put("Crédito", "Crédito");
+        tableHeader.put("Débito", "Débito");
+        tableHeader.put("Saldo", "Saldo");
         writer.setTableHeader(tableHeader, flagClasification); 
         //debugging
         //System.out.println("Cabecera de tabla convertida");

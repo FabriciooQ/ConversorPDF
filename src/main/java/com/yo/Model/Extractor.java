@@ -12,16 +12,16 @@ public class Extractor {
         //matcher general
         Matcher m;
         
+        //Patern fecha
+        Pattern patternSinOrigen = Pattern.compile("^(\\d{2}/\\d{2})\\s\\s(.*)\\s(.+)\\s(.+)$");
         //Patern que captura con origen
-        Pattern patternOrigen = Pattern.compile("^(\\d{2}/\\d{2}/\\d{2})\\s(.*)\\s(\\d{4})\\s([0-9.,-]+)\\s([0-9,.-]+)$");
-        //Patern que captura sin origen
-        Pattern pattern = Pattern.compile("^(\\d{2}/\\d{2}/\\d{2})\\s(.*)\\s([0-9.,-]+)\\s([0-9,.-]+)$");
+        Pattern patternOrigen = Pattern.compile("^(\\d{2}/\\d{2})\\s([A-Z]\\s?\\d*)\\s(.*)\\s(.+)\\s(.+)$");
         //captura
         m = patternOrigen.matcher(line.trim());
         if(m.find()){
             res[0] = m.group(1);    //fecha
-            res[1] = m.group(2).trim(); //descripcion
-            res[2] = m.group(3);    //origen
+            res[1] = m.group(3).trim(); //descripcion
+            res[2] = m.group(2);    //origen
             //si el siguiente grupo empieza con - es debito si no saldo
             if(m.group(4).startsWith("-")){
                 res[3] = null;  //credito
@@ -30,9 +30,9 @@ public class Extractor {
                 res[3] = m.group(4);
                 res[4] = null;
             }
-            res[5] = m.group(5).replaceFirst("-$", ""); //saldo
+            res[5] = m.group(5); //saldo
         }else{
-            m = pattern.matcher(line.trim());
+            m = patternSinOrigen.matcher(line.trim());
             if(m.find()){
                 res[0] = m.group(1);    //fecha
                 res[1] = m.group(2).trim(); //descripcion
@@ -46,7 +46,10 @@ public class Extractor {
                     res[4] = null;
                 }
                 //si el saldo termina con - lo borramos es un error que trae el pdf
-                res[5] = m.group(4).replaceFirst("-$", ""); //saldo
+                res[5] = m.group(4); //saldo
+            }else{
+                //si no coincide con ningun patron signfica que estamos en el final
+                return null;
             }
         }
 

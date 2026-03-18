@@ -114,8 +114,8 @@ public class MainScene {
         labelbankSelector.getStyleClass().add("label");
         ChoiceBox<String> bankSelector = new ChoiceBox<>();
         bankSelector.getStyleClass().add("combo-box");
-        bankSelector.getItems().addAll("Galicia");
-        bankSelector.setValue("Galicia");
+        bankSelector.getItems().addAll("BBVA");
+        bankSelector.setValue("BBVA");
         Button buttonParams = new Button("Parametros");
         buttonParams.getStyleClass().add("button");
         buttonParams.setDisable(true);
