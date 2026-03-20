@@ -82,6 +82,12 @@ public class Transformer {
         //debugging
         //System.out.println("Cabecera de tabla convertida");
 
+
+        //primera pagina
+        for(int i=0; i<firstPage.length; i++){
+            System.out.println(firstPage[i]);
+        }
+
         //leo datos de tabla en primera pagina y seteo en el excel
         Map<Integer,String[]> tableData = parser.parseContentTable(firstPage, true);
         //si se clasifica

@@ -26,10 +26,10 @@ public class Parser {
     public Map<Integer, String[]> parseContentTable(String[] lineas, boolean firstPage){
         Map<Integer, String[]> data = new HashMap<>();
         int contRows = 0;
-        int index = 56;
+        int index = 55;
         //porque sino se confunde con los renglones que empiezan con fecha en el header
         if(firstPage){
-            index=14;
+            index=41;
         }
         while(index < lineas.length){
             //data del renglon de la tabla
