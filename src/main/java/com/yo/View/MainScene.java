@@ -10,6 +10,7 @@ import com.yo.Controller.TransformationController;
 
 import javafx.concurrent.Task;
 import javafx.event.EventType;
+import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -26,21 +27,51 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class MainScene {
-    private Scene scene;
-    private Stage stage;
     private TransformationController controller;
+    private PDFFileChooser pdfChooser;
+    private ExcelFileChooser excelChooser;
+    @FXML
+    private TextArea testAreaPDF;
+    @FXML
+    private Button buttonSelectPDF;
+    @FXML
+    private TextArea textAreaExcel;
+    @FXML 
+    private Button buttonSelectExcel;
+    @FXML
+    private ChoiceBox bankSelector;
+    @FXML
+    private Button parametrosButton;
+    @FXML
+    private CheckBox buttonClasificar;
+    @FXML
+    private Text textoConvirtiendo;
+    @FXML
+    private Button buttonConvertir;
 
-    public MainScene(Stage stage, TransformationController controller, double width, double height){
-        this.stage = stage;
-        this.controller = controller;
-        this.scene = createMainScene(width, height);
+
+    public MainScene(){
+        //obtenemos el singleton del controller
+        this.controller = TransformationController.getTransformationController();
+        this.pdfChooser = new PDFFileChooser();
+        this.excelChooser= new ExcelFileChooser();
     }
 
-    public Scene getScene(){
-        return this.scene;
+    @FXML
+    public void initialize(){
+        //ponermos imagenes a buttons
+        ImageView folderLogo = new ImageView(new Image(getClass().getResourceAsStream("/img/folder.png")));
+        folderLogo.setFitWidth(25);
+        folderLogo.setFitHeight(25);
+        folderLogo.setPreserveRatio(true);
+        this.buttonSelectPDF.setGraphic(folderLogo);
+        this.buttonSelectExcel.setGraphic(folderLogo);
     }
 
-    public Scene createMainScene(double width, double height){
+    @FXML
+    public 
+
+    public Scene createMainScene(double width, double height)
         //creamos los chooser para abrir y guardar
         PDFFileChooser chooserPDF = new PDFFileChooser(this.stage);
         ExcelFileChooser chooserExcel = new ExcelFileChooser (this.stage);

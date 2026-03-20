@@ -2,15 +2,15 @@ package com.yo.View;
 
 import java.io.File;
 
+import com.yo.SceneManager;
+
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class ExcelFileChooser {
     FileChooser chooser;
-    Stage stage;
 
-    public ExcelFileChooser(Stage stage){
-        this.stage = stage;
+    public ExcelFileChooser(){
         chooser = new FileChooser();
         this.chooser.setTitle("Seleccione donde guardar el PDF");
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("excel", "*.xlsx"));
@@ -22,7 +22,7 @@ public class ExcelFileChooser {
     }
 
     public String saveExcel(){
-        File f = chooser.showSaveDialog(this.stage);
+        File f = chooser.showSaveDialog(SceneManager.getStage());
         return f.getAbsolutePath();
     }
     

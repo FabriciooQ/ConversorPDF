@@ -51,7 +51,9 @@ public class App extends Application{
     //de la GUI
     public void start(Stage primaryStage) {
         //creamos el sceneManager
-
+        SceneManager sceneManager = new SceneManager();
+        sceneManager.initialize(primaryStage);
+        sceneManager.switchTo("MainScene");
 
         //creamos controllers
 /*         TransformationController transformationController = new TransformationController();

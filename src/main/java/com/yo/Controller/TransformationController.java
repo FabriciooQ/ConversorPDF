@@ -15,12 +15,23 @@ import com.yo.Model.Rule;
 import com.yo.Model.Transformer;
 import com.yo.Model.TxtReader;
 
+//Singleton
 public class TransformationController {
     private Transformer transformer;
     private TxtReader rulesReader;
     private DatabaseAdministrator dbAdmin;
+    private static TransformationController transformationController = null;
+
+    public static TransformationController getTransformationController(){
+        if(transformationController != null){
+            return transformationController;
+        }else{
+            transformationController = new TransformationController();
+            return transformationController;
+        }
+    }
     
-    public TransformationController(){
+    private TransformationController(){
         this.rulesReader = new TxtReader();
         this.dbAdmin = new DatabaseAdministrator();
     }

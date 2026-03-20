@@ -15,20 +15,41 @@
             styleClass = "title"/>
     </HBox>
 
-    <Label text="Seleccionar PDF"
-        styleClass="label"/>
-    <TextArea prefWidth="285" prefHeight="20"/>
-    <Button fx:id="buttonSelectPDF" styleClass="button"/>
+    <VBox>
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+        <HBox alignment="CENTER">
+            <Label text="Seleccionar PDF"
+                styleClass="label"/>
+            <TextArea fx:id="textAreaPDF" prefWidth="285" prefHeight="20"/>
+            <Button fx:id="buttonSelectPDF" styleClass="button" onAction="#selectPDF"/>
+        </HBox>
+    </VBox>
 
+    <VBox>
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+        <HBox alignment="CENTER">
+            <Label text="Seleccionar lugar de guardado del excel"
+                styleClass="label"/>
+            <TextArea fx:id="textAreaExcel" prefWidth="285" prefHeight="20"/>
+            <Button fx:id="buttonSelectExcel" styleClass="button"/>
+        </HBox>
+    </VBox>
 
+    <HBox alignment="CENTER">
+        <Label text="Seleccionar Banco"
+            styleClass="label"/>
+        <ChoiceBox fx:id="bankSelector"/>
+        <Button fx:id="parametrosButton" styleClass="button"/>
+        <CheckBox fx:id="buttonClasificar" styleClass="check-box" />
+    </HBox>
 
-
-    <Label text="Login"/>
-
-    <TextField fx:id="usernameField"
-               promptText="Usuario"/>
-
-    <Button text="Ingresar"
-            onAction="#login"/>
-
+    <HBox alignment="CENTER">
+        <Text fx:id="textoConvirtiendo"/>
+        <Button fx:id="buttonConvertir"/>
+    <HBox/>
+    
 </VBox>

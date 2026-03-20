@@ -12,6 +12,7 @@ public class SceneManager {
         this.stage = s;
     }
 
+    //es static para usar el patron singleton, se inicializa la clase en start y despues se accede globalmente a este metodo
     public static void switchTo(String view){
         try{
             FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource("/com/yo/app" + view + ".fxml"));
@@ -21,6 +22,10 @@ public class SceneManager {
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    public static Stage getStage(){
+        return SceneManager.stage;
     }
     
 }
