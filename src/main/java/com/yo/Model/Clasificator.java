@@ -12,24 +12,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.yo.Controller.DatabaseController;
+
 public class Clasificator {
-    public Map<Integer,String[]> rules;
-    private TxtReader rulesReader;
+    private List<OrdenRegla> rules;
 
 
     public Clasificator(){
-        this.rules = new HashMap<>();
-        this.rulesReader = new TxtReader();
-        rulesReader.loadRules(rules);
-
+        this.rules = DatabaseController.getDatabaseController().getRulesInOrderPerBank();
     }
 
     public  Map<Integer, String> classify(Map<Integer,String[]> data){
         Map<Integer, String> res = new HashMap<>();
         data.forEach((k,v) ->{
             for(int i=0; i<rules.size(); i++){
-                if(v[1].matches(rules.get(i)[0].trim())){
-                    res.put(k, rules .get(i)[1].trim());
+                if(v[1].matches(rules.get(i).getRegla().getRegularExpresion())){
+                    res.put(k, rules .get(i).getRegla().getTexto());
                     //System.out.println(res.get(k));
                     break;
                 }

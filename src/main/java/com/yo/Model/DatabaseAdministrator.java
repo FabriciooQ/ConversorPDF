@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import javax.management.Query;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -16,8 +18,19 @@ import org.hibernate.cfg.Configuration;
 public class DatabaseAdministrator{
     private SessionFactory factory;
     private Configuration configuration;
+    private static DatabaseAdministrator instance=null;
 
-    public DatabaseAdministrator(){
+    public static DatabaseAdministrator getInstance(){
+        if(instance == null){
+           instance = new DatabaseAdministrator();
+           return instance;
+        }else{
+            return instance;
+        }
+
+    }
+
+    private DatabaseAdministrator(){
         this.configuration = new Configuration();
         this.configuration.addAnnotatedClass(com.yo.Model.Rule.class);
         this.configuration.addAnnotatedClass(com.yo.Model.Banco.class);
@@ -47,6 +60,9 @@ public class DatabaseAdministrator{
     public void closeSession(){
         this.factory.close();
     }
+
+
+
 
     public boolean deleteRule(Rule r){
         if(r==null){
@@ -80,6 +96,15 @@ public class DatabaseAdministrator{
 
     }
 
+    public Banco getBancoByName(String nombre){
+        Session session = this.factory.openSession();
+        Banco banco = session.createQuery("FROM Banco where nombre like :nombre", Banco.class)
+            .setParameter("nombre", nombre)
+            .uniqueResult();
+        session.close();
+        return banco;       
+    }
+
     public Banco getBanco(int id){
         Session session = this.factory.openSession();
         session.createSelectionQuery("FROM Banco where id like :id", Banco.class);
@@ -91,8 +116,48 @@ public class DatabaseAdministrator{
         List<Banco> bancos = session.createQuery("FROM Banco", Banco.class).list();
         session.close();
         return bancos;
-
     }
+
+    public void modifyOrdenRegla(OrdenRegla o){
+        if(o == null){
+            return;
+        }
+        Session session = null;
+        Transaction transaction = null;
+        try{
+            session = this.factory.openSession();
+            transaction = session.beginTransaction();
+            session.merge(o);
+            transaction.commit();
+
+        }catch(Exception e){
+            transaction.rollback();
+            e.printStackTrace();
+        }finally{
+            session.close();
+        }
+    }
+
+    public void removeOrden(OrdenRegla o){
+        if(o == null){
+            return;
+        }
+        Session session = null;
+        Transaction transaction = null;
+        try{
+            session = this.factory.openSession();
+            transaction = session.beginTransaction();
+            session.remove(o);
+            transaction.commit();
+        }catch(Exception e){
+            transaction.rollback();
+            e.printStackTrace();
+        }finally{
+            session.close();
+        }   
+    }
+
+
 
 }
 

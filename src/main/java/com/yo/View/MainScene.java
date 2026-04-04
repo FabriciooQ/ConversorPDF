@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.yo.SceneManager;
+import com.yo.Controller.DatabaseController;
 import com.yo.Controller.TransformationController;
 
 import javafx.concurrent.Task;
@@ -17,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
@@ -27,11 +30,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class MainScene {
-    private TransformationController controller;
+    private TransformationController transformationController;
+    private DatabaseController databaseController;
     private PDFFileChooser pdfChooser;
     private ExcelFileChooser excelChooser;
     @FXML
-    private TextArea testAreaPDF;
+    private TextArea textAreaPDF;
     @FXML
     private Button buttonSelectPDF;
     @FXML
@@ -39,7 +43,7 @@ public class MainScene {
     @FXML 
     private Button buttonSelectExcel;
     @FXML
-    private ChoiceBox bankSelector;
+    private ComboBox bankSelector;
     @FXML
     private Button parametrosButton;
     @FXML
@@ -48,11 +52,16 @@ public class MainScene {
     private Text textoConvirtiendo;
     @FXML
     private Button buttonConvertir;
+    @FXML
+    private HBox hboxConviertiendo;
+    @FXML
+    private Button buttonAbrir;
 
 
     public MainScene(){
         //obtenemos el singleton del controller
-        this.controller = TransformationController.getTransformationController();
+        this.transformationController = TransformationController.getTransformationController();
+        this.databaseController = DatabaseController.getDatabaseController();
         this.pdfChooser = new PDFFileChooser();
         this.excelChooser= new ExcelFileChooser();
     }
@@ -60,117 +69,64 @@ public class MainScene {
     @FXML
     public void initialize(){
         //ponermos imagenes a buttons
-        ImageView folderLogo = new ImageView(new Image(getClass().getResourceAsStream("/img/folder.png")));
-        folderLogo.setFitWidth(25);
-        folderLogo.setFitHeight(25);
-        folderLogo.setPreserveRatio(true);
-        this.buttonSelectPDF.setGraphic(folderLogo);
-        this.buttonSelectExcel.setGraphic(folderLogo);
-    }
-
-    @FXML
-    public 
-
-    public Scene createMainScene(double width, double height)
-        //creamos los chooser para abrir y guardar
-        PDFFileChooser chooserPDF = new PDFFileChooser(this.stage);
-        ExcelFileChooser chooserExcel = new ExcelFileChooser (this.stage);
-        
-        //creamos contenedor root
-        VBox root = new VBox(15);
-        root.setPadding(new Insets(20, 20, 20, 20));
-
-        //Titulo
-        Text title = new Text("Conversor de PDF"); 
-        title.getStyleClass().add("title");
-        HBox titleLayout = new HBox(title);
-        titleLayout.setAlignment(Pos.CENTER);
-        root.getChildren().add(titleLayout);
-
-        //selector archivo
-        Label labelSelector = new Label("Seleccionar pdf");
-        labelSelector.getStyleClass().add("label");
-        TextArea textAreaArchive = new TextArea();
-        textAreaArchive.setMaxWidth(285);
-        textAreaArchive.setMaxHeight(1);
-        //Button seleccionarArchivo
-        Button buttonSelect = new Button();
         ImageView folderLogoPDF = new ImageView(new Image(getClass().getResourceAsStream("/img/folder.png")));
         folderLogoPDF.setFitWidth(25);
         folderLogoPDF.setFitHeight(25);
         folderLogoPDF.setPreserveRatio(true);
-        buttonSelect.setGraphic(folderLogoPDF);
-        buttonSelect.getStyleClass().add("button");
-        TextArea textAreaDestination = new TextArea();//la declaramos aca para poder usarlo en el onAction
-        buttonSelect.setOnAction(e -> {
-            String filePath = chooserPDF.openFile();
-            textAreaArchive.setText(filePath);
-            textAreaDestination.setText(filePath.replace(".pdf", ".xlsx"));
-        });
-        //agregamos
-        HBox selectFileLayout = new HBox(10, textAreaArchive, buttonSelect);
-        selectFileLayout.setAlignment(Pos.CENTER);
-        VBox auxSelectFileLayout = new VBox(5, labelSelector, selectFileLayout);
-        auxSelectFileLayout.setPadding(new Insets(20,20,20,20));
-        root.getChildren().add(auxSelectFileLayout);
-
-        //seleccion de carpeta para guardar archivo
-        Label labelSaveFile = new Label("Seleccionar donde se va a guardar el excel");
-        labelSaveFile.getStyleClass().add("label");
-        textAreaDestination.getStyleClass().add("text-area");
-        textAreaDestination.setMaxWidth(285);
-        textAreaDestination.setMaxHeight(1);
-        Button butonSelectDestination = new Button();
+        this.buttonSelectPDF.setGraphic(folderLogoPDF);
         ImageView folderLogoExcel = new ImageView(new Image(getClass().getResourceAsStream("/img/folder.png")));
         folderLogoExcel.setFitWidth(25);
         folderLogoExcel.setFitHeight(25);
         folderLogoExcel.setPreserveRatio(true);
-        butonSelectDestination.setGraphic(folderLogoExcel);
-        butonSelectDestination.getStyleClass().add("button");
-        butonSelectDestination.setOnAction(e -> {
-            //extraemos nombre
-            String initString = textAreaDestination.getText().replaceAll("^.*\\\\", "");
-            chooserExcel.setInitialName(initString);
-            String filePathDestination = chooserExcel.saveExcel();
-            textAreaDestination.setText(filePathDestination);
-        });
-        //agregamos
-        HBox destinationLayout = new HBox(10, textAreaDestination, butonSelectDestination);
-        destinationLayout.setAlignment(Pos.CENTER);
-        VBox auxLabelSaveFile = new VBox(5, labelSaveFile, destinationLayout);
-        auxLabelSaveFile.setPadding(new Insets(20,20,20,20));
-        root.getChildren().add(auxLabelSaveFile);
+        this.buttonSelectExcel.setGraphic(folderLogoExcel);
 
-        //Selector de banco y clasificacion
-        Label labelbankSelector = new Label("Seleccionar Banco");
-        labelbankSelector.getStyleClass().add("label");
-        ChoiceBox<String> bankSelector = new ChoiceBox<>();
-        bankSelector.getStyleClass().add("combo-box");
-        bankSelector.getItems().addAll(controller.getNombresBancos());
-        bankSelector.setValue("Galicia");
-        Button buttonParams = new Button("Parametros");
-        buttonParams.getStyleClass().add("button");
-        buttonParams.setDisable(true);
-        buttonParams.setOnAction(e->{
-            stage.setScene();
-        });
-        CheckBox buttonClasification = new CheckBox("Clasificar");
-        buttonClasification.getStyleClass().addAll("check-box");
-        buttonClasification.setOnAction(e->{
-           buttonParams.setDisable(!buttonParams.isDisable());
-        });
-        //agregamos
-        HBox bankSelectorLayout = new HBox(7, labelbankSelector, bankSelector, buttonClasification, buttonParams);
-        bankSelectorLayout.setAlignment(Pos.CENTER);
-        root.getChildren().addAll(bankSelectorLayout);
+        //el boton parametros arranca disabled por defecto
+        this.parametrosButton.setDisable(true);
+        
+        //agregamos nombres de banco a selector
+        String[] bancos = databaseController.getNombresBancos();
+        this.bankSelector.getItems().addAll(bancos);
+        bankSelector.setValue(bancos[0]);
+    }
 
-        //texto que se va a mostrar cuando se este convirtiendo el archivo y despues
-        Text textConverted = new Text();
-        textConverted.setVisible(false);
-        Button bunttonOpenFile= new Button("Abrir");
-        bunttonOpenFile.setVisible(false);
-        bunttonOpenFile.setOnAction(e->{
-            File file = new File(textAreaDestination.getText());
+    @FXML
+    public void selectPDF(){
+        String filePath = this.pdfChooser.openFile();
+        this.textAreaPDF.setText(filePath);
+        this.textAreaExcel.setText(filePath.replace(".pdf", ".xlsx"));
+    }   
+
+    @FXML
+    public void selectExcel(){
+        String initString = this.textAreaExcel.getText().replaceAll("^.*\\\\", "");
+        excelChooser.setInitialName(initString);
+        String filePathDestination = excelChooser.saveExcel();
+        this.textAreaExcel.setText(filePathDestination);
+    }
+
+    @FXML
+    public void parametrosAction(){
+        SceneManager.switchTo("ParameterScene");
+    }
+
+    @FXML
+    public void selectBank(){
+        this.databaseController.setBancoActual((String)this.bankSelector.getValue());
+    }
+
+    @FXML
+    public void checkClasificar(){
+        boolean flag = buttonClasificar.isSelected();
+        if(flag){
+            this.parametrosButton.setDisable(false);
+        }else{
+            this.parametrosButton.setDisable(true);
+        }
+    }
+
+    @FXML
+    public void abrirExcel(){
+        File file = new File(textAreaExcel.getText());
             Desktop desktop = Desktop.getDesktop();
             try {
                 desktop.open(file);
@@ -178,62 +134,37 @@ public class MainScene {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-        });
-        //agregamos
-        HBox openFileLayout = new HBox(7, textConverted, bunttonOpenFile);
-        openFileLayout.setAlignment(Pos.CENTER);
-        root.getChildren().add(openFileLayout);
-
-        //boton convertir
-        Button buttonConvert = new Button("Convertir");
-        buttonConvert.setOnAction(e->{
-            //Desactivamos todos los botones y inputs
-            textAreaArchive.setEditable(false);
-            textAreaDestination.setEditable(false);
-            buttonSelect.setDisable(true);
-            butonSelectDestination.setDisable(true);
-            bankSelector.setDisable(true);
-            //hacemos visible el texto que se esta conviritiendo
-            textConverted.setText("Conviertiendo ...");
-            textConverted.setVisible(true);
-            //convertimos (con una Task en otro hilo para no bloquear el de la interfaz)
-            Task <Void> task = new Task<Void>() {
-                @Override
-                protected Void call() throws Exception {
-                    controller.transformToExcel(textAreaArchive.getText(), textAreaDestination.getText(), buttonClasification.isSelected());
-                    //como no es void como tal si no la clase que lo representa necesitamos un return
-                    return null;
-                }
-            };
-            //seteamos que cuando la tarea tenga exito se habiliten las cosas y mostramos el texto y el boton
-            task.setOnSucceeded(w->{
-                //volvemos a habilitar todo
-                textAreaArchive.setEditable(true);
-                textAreaDestination.setEditable(true);
-                buttonSelect.setDisable(false);
-                butonSelectDestination.setDisable(false);
-                bankSelector.setDisable(false);
-                //cambiamos el texto y hacemos visible el boton para abrir
-                textConverted.setText("Archivo convertido y guardado, haga click para abrir:");
-                bunttonOpenFile.setVisible(true);
-            });
-            Thread t = new Thread(task);
-            t.start();
-        });
-        HBox buttonConvertLayout = new HBox(buttonConvert);
-        buttonConvertLayout.setAlignment(Pos.CENTER);
-        root.getChildren().add(buttonConvertLayout);
-
-        
-        
-        //creamos la escena y la seteamos al stage principal
-        Scene scene = new Scene(root, width, height);
-        scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
-        
-  
-        return scene;
-
     }
+
+    @FXML
+    public void clasificarAction(){ 
+        this.textAreaPDF.setEditable(true);
+        this.textAreaExcel.setEditable(true);
+        this.buttonSelectPDF.setDisable(true);
+        this.buttonSelectExcel.setDisable(true);
+        this.hboxConviertiendo.setVisible(true);
+
+        Task task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                transformationController.transformToExcel(textAreaPDF.getText(), textAreaExcel.getText(), databaseController.getBancoActual(), buttonClasificar.isSelected());
+                buttonAbrir.setVisible(true);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(w->{
+            this.textoConvirtiendo.setText("Archivo convertido, haga click para abrir:");
+            this.textAreaPDF.setEditable(false);
+            this.textAreaExcel.setEditable(false);
+            this.buttonSelectPDF.setDisable(false);
+            this.buttonSelectExcel.setDisable(false);
+        });
+
+        Thread thread = new Thread(task);
+        thread.start();
+    }       
+ 
 
     
     

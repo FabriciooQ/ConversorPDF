@@ -14,7 +14,7 @@ import com.yo.Model.Banco;
 import com.yo.Model.DatabaseAdministrator;
 import com.yo.View.MainScene;
 import com.yo.View.ParameterSceneTable;
-import com.yo.pruebas.peueba;
+import com.yo.pruebas.PruebaReader;
 
 import javafx.application.Application;
 import javafx.concurrent.Task;
@@ -50,42 +50,27 @@ public class App extends Application{
     //Stage seria la windows de la interfaz, el Stage recibido por parametro representa la ventana principal
     //de la GUI
     public void start(Stage primaryStage) {
-        //creamos el sceneManager
-        SceneManager sceneManager = new SceneManager();
-        sceneManager.initialize(primaryStage);
-        sceneManager.switchTo("MainScene");
-
-        //creamos controllers
-/*         TransformationController transformationController = new TransformationController();
-        DatabaseController databaseController = new DatabaseController();
-
-        
-        primaryStage.setResizable(false);
+     /*    PruebaReader.run(); */
+         primaryStage.setResizable(true);
+        primaryStage.setMinWidth(500);
+        primaryStage.setMinHeight(500);
         //seteamos nombre y icono
         primaryStage.setTitle("Conversor PDF");
         Image image = new Image(getClass().getResourceAsStream("/img/logo.png"));
         primaryStage.getIcons().add(image);
-        
-        //creamos escena de de parametros
-        ParameterSceneTable parameterScene = new ParameterSceneTable(primaryStage,)
 
-        //creamos escena principal
-        MainScene main = new MainScene(primaryStage, transformationController, 450, 450);
-        Scene mainScene = main.getScene();
-
-
-
-        //seteamos que cuando se cierrre se cierre la sessionFactory de hibernate
+        //creamos el dbController para setear que las conexiones se cierren al cerrar el programa
+        DatabaseController dbController = DatabaseController.getDatabaseController();
         primaryStage.setOnCloseRequest(event ->{
-            databaseController.closeDB();
+            dbController.closeDB();
         });
-        
-        //seteamos la escena main
-        primaryStage.setScene(mainScene);
 
-            
-        //mostramos
-        primaryStage.show(); */
+        //creamos el sceneManager
+        SceneManager sceneManager = new SceneManager();
+        sceneManager.initialize(primaryStage);
+        sceneManager.switchTo("MainScene"); 
+ 
+      
     }
 }
 

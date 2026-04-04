@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+    fx:controller="com.yo.View.ParameterSceneTable"
+    stylesheets="@styles/style.css">
+    <top>
+        <HBox
+            BorderPane.alignment="CENTER"
+            alignment="CENTER"
+        >
+            <padding>
+                <Insets top="40" right="0" bottom="0" left="0"/>
+            </padding>
+            <Text fx:id="parametrosTitle" styleClass="title"></Text>
+        </HBox>
+    </top>
+    <center>
+        <VBox
+            BorderPane.alignment="TOP_CENTER"
+            maxHeight="800"
+            alignment="CENTER"
+        >
+            <padding>
+                <Insets top="30" right="0" bottom="0" left="0"/>
+            </padding>
+            <TableView fx:id="table">
+                <columns>
+                    <TableColumn fx:id="columnaOrden" text="Orden"></TableColumn>
+                    <TableColumn fx:id="columnaExpresion" text="Expresion"></TableColumn>
+                    <TableColumn fx:id="columnaCondicion" text="Condicion"></TableColumn>
+                    <TableColumn fx:id="columnaTexto" text="Texto"></TableColumn>
+                    <TableColumn fx:id="columnaEliminar" text="Borrar"></TableColumn>
+                </columns>
+            </TableView>
+            <HBox alignment="CENTER_RIGHT">
+                <padding>
+                    <Insets top="10" right="10" bottom="0" left="0"/>
+                </padding>
+                <Button fx:id="buttonNuevaRegla" onAction="#agregarRegla">Añadir Regla</Button>
+            </HBox>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="TOP_CENTER"
+            spacing="10">
+            <padding>
+                <Insets top="10" right="0" bottom="10" left="0"/>
+            </padding>
+            <Button fx:id="buttonCancelar" onAction="#cancelar">Cancelar</Button>
+            <Button fx:id="buttonGuardar" onAction="#guardar">Guardar</Button>
+        </HBox>
+    </bottom>
+
+</BorderPane>

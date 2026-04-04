@@ -1,5 +1,7 @@
 package com.yo;
 
+import java.net.URL;
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,7 +17,7 @@ public class SceneManager {
     //es static para usar el patron singleton, se inicializa la clase en start y despues se accede globalmente a este metodo
     public static void switchTo(String view){
         try{
-            FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource("/com/yo/app" + view + ".fxml"));
+            FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource("/" + view + ".fxml"));
             Parent root = loader.load();
             stage.setScene(new Scene(root));
             stage.show();

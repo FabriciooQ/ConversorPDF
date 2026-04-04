@@ -27,6 +27,28 @@
     -fx-background-color: #2d394d;
 }
 
+.buttonOrden{
+    -fx-background-color: #3c4a5f;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-padding: 1 1 1 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 4, 0, 0, 1);
+    -fx-font-weight: bold;
+    -fx-transition: all 0.2s ease-in-out;
+}
+
+.buttonOrden:hover{
+    -fx-background-color: #4a5a75;
+
+}
+
+.buttonOrden:pressed{
+    -fx-background-color: #2d394d;
+
+}
+
 /* Botón gris (ej. “Agregar”) */
 .button.secondary {
     -fx-background-color: #b0b3b8;
