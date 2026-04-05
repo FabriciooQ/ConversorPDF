@@ -1,5 +1,6 @@
 package com.yo.View;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -382,6 +383,16 @@ public class ParameterSceneTable {
 
         //RECUPERAMOS REGLAS Y SETEAMOS EN LA TABLA
         List<OrdenRegla> rules = dbController.getRulesInOrderPerBank();
+        if(rules == null || rules.size() == 0){
+            //creamos nuevo OrdenRegla
+            Banco banco = dbController.getBancoActual();
+            Rule regla = new Rule();
+            OrdenRegla nueva = new OrdenRegla(1, regla, banco);        
+            reglasModificadas.add(nueva);
+            rules = new ArrayList<OrdenRegla>(); 
+            rules.add(nueva);
+        
+        }
         System.out.println("Datos recuperados de la BD:" + rules.size());
         ObservableList<OrdenRegla> rulesTable = FXCollections.observableList(rules);
         this.table.setItems(rulesTable);

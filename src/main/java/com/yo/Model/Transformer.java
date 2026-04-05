@@ -1,36 +1,39 @@
 package com.yo.Model;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.pdfbox.Loader;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.yo.Model.interfaces.Extractor;
+import com.yo.Model.interfaces.Parser;
 
 public class Transformer {
     public static void transform(String originPath, String destinationPath, Banco banco, boolean flagClasification ){
         System.out.println("Empezando");
+
+        //Creamos extractor y parser segun banco
+        Extractor extractor = null;
+        Parser parser = null;
+
+        switch (banco.getId()) {
+            case 1:
+                extractor = new ExtractorForGalicia();
+                parser = new ParserForGalicia(extractor);
+                System.out.println("Parser creado");
+                break;
+            case 2:
+                extractor = new ExtractorForBBVA();
+                parser = new ParserForBBVA(extractor);
+                System.out.println("Parser creado");
+            default:
+                break;
+        }
+        
+
         //lector de pdf
         PDFReader reader = new PDFReader(originPath);
         System.out.println("PDF Reader creado");
-
-        //parseador de datos 
-        Parser parser = new Parser();
-        System.out.println("Parser creado");
 
         //definimos el writer para el xlsx
         WriterXSLX writer = null;

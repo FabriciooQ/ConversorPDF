@@ -86,7 +86,7 @@ public class MainScene {
         //agregamos nombres de banco a selector
         String[] bancos = databaseController.getNombresBancos();
         this.bankSelector.getItems().addAll(bancos);
-        bankSelector.setValue(bancos[0]);
+        bankSelector.setValue(databaseController.getBancoActual().getNombre());
     }
 
     @FXML

@@ -5,14 +5,16 @@ import java.util.List;
 import java.util.Set;
 
 import com.yo.Model.Banco;
-import com.yo.Model.DatabaseAdministrator;
+import com.yo.Services.BancoServices;
+import com.yo.Services.OrdenReglaServices;
 import com.yo.Model.OrdenRegla;
 import com.yo.Model.Rule;
 
 
 public class DatabaseController{
     private static DatabaseController databaseController = null;
-    private DatabaseAdministrator dbAdmin;
+    private OrdenReglaServices ordenReglaService;
+    private BancoServices bancoServices;
     //id del banco que se quieren ver los parametros, seteado en mainScene
     private Banco bancoActual = null;
 
@@ -26,13 +28,14 @@ public class DatabaseController{
     }
 
     private DatabaseController(){
-        this.dbAdmin = DatabaseAdministrator.getInstance();
+        this.ordenReglaService = OrdenReglaServices.getInstance();
+        this.bancoServices = bancoServices.getInstance();
         this.setBancoActual("Galicia");
     }
 
     
     public String[] getNombresBancos(){
-        List<Banco> bancos = this.dbAdmin.getBancos();
+        List<Banco> bancos = this.bancoServices.getBancos();
         if(bancos.size() == 0){
             return null;
         }else{
@@ -45,7 +48,7 @@ public class DatabaseController{
     }
     
     public List<OrdenRegla> getRulesInOrderPerBank(){
-        List<OrdenRegla> reglasOrdenadas = this.dbAdmin.getOrdenReglasPerBank(this.bancoActual.getId());
+        List<OrdenRegla> reglasOrdenadas = this.ordenReglaService.getReglasBancos(bancoActual.getId());
         if(reglasOrdenadas.size() > 0){
             return reglasOrdenadas;
         }else{
@@ -54,7 +57,17 @@ public class DatabaseController{
     }
 
     public void setBancoActual(String nombre) {
-        this.bancoActual = this.dbAdmin.getBancoByName(nombre);
+        this.bancoActual = this.bancoServices.getBancoByName(nombre);
+
+    }
+
+    public void setBancoActual(Banco b) {
+        this.bancoActual = b;
+    }
+
+    public Banco getBancoPorId(int id){
+        Banco banco = this.bancoServices.getBanco(id);
+        return banco;
     }
 
     public Banco getBancoActual(){
@@ -63,17 +76,13 @@ public class DatabaseController{
     
     public void modifyOrdenes(Set<OrdenRegla> ordenes){
         ordenes.forEach(o->{
-            dbAdmin.modifyOrdenRegla(o);
+            this.ordenReglaService.cambiarOrden(o);
         });
     }
 
 
-    public void removeOrden(OrdenRegla r){
-        dbAdmin.removeOrden(r);
-    }
-
-    public void closeDB(){
-        dbAdmin.closeSession();
+    public void removeOrden(OrdenRegla O){
+        this.ordenReglaService.removeOrden(O);
     }
 
     

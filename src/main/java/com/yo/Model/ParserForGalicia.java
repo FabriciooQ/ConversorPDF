@@ -1,0 +1,228 @@
+package com.yo.Model;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.yo.Model.interfaces.Extractor;
+import com.yo.Model.interfaces.Parser;
+
+public class ParserForGalicia implements Parser {
+    private int jumps;
+    private int movimientosIndex;
+    private Extractor extractor;
+
+    public ParserForGalicia(Extractor extractor){
+        this.extractor = extractor;
+        this.jumps = 0;
+    }
+
+    //cabecera comienza en el indice 29+jumps
+    public Map<String, String> parseTableHeader(String[] lines){
+        Map<String, String> data = new HashMap<>();
+        Pattern p = Pattern.compile("Movimientos");
+        for(int i=0; i<lines.length; i++){
+            Matcher m = p.matcher(lines[i].trim());
+            if(m.matches()){
+                movimientosIndex=i;
+                break;
+            }
+        }
+        String[] tableHeader = lines[movimientosIndex+1].trim().split("\\s+");
+        for(String s:tableHeader){
+            data.put(s, s);
+        }
+        return data;
+    }
+    
+    public Map<Integer, String[]> parseContentTable(String[] lineas, boolean firstPage){
+        Map<Integer, String[]> data = new HashMap<>();
+        int contRows = 0;
+        int index = 4;
+        //porque sino se confunde con los renglones que empiezan con fecha en el header
+        if(firstPage){
+            //buscamos la palabra Movimientos y de ahi sabemos que son 2 lineas mas y arrancan los movimientos
+            index=movimientosIndex+2;
+        }
+        //pattern, matcher y cosas para multilinea, no se usa Extractor porque hay que iterar sobre muchos renglones
+        Pattern pDateMultilane = Pattern.compile("^(\\d\\d/\\d\\d/\\d\\d)\\s(.*)");
+        Matcher  m;
+        String description;
+
+        while(index < lineas.length){
+            //data del renglon de la tabla
+            String[] dataLine = new String[6]; 
+            //if para saber si todo esta en un mismo renglon
+            if(lineas[index].trim().matches("^\\d\\d/\\d\\d/\\d\\d.*") && 
+                (lineas[index].trim().matches(".*,\\d\\d$") || lineas[index].trim().matches(".*,\\d\\d-$"))){
+                dataLine = this.extractor.extractDataInline(lineas[index]);
+
+                //agregamos datos al map con la llave del numero de fila
+                data.put(contRows, dataLine);
+                contRows++;
+                //sumamos index para ver la proxima fila
+                index++;
+            //si empieza con fecha pero no termina con numero tiene descripcion larga
+            }else if(lineas[index].trim().matches("^\\d\\d/\\d\\d/\\d\\d .*")){
+                description = "";
+                m = pDateMultilane.matcher(lineas[index]);
+                if(m.find()){
+                    dataLine[0] = m.group(1);
+                    description += m.group(2);
+                    index++;
+                    while(index<lineas.length){
+                        if(lineas[index].trim().matches(".*\\d,\\d\\d$") || lineas[index].trim().matches(".*\\d,\\d\\d-$")){
+                            break;
+                        }else{
+                            description += " " + lineas[index];
+                        }
+                        index++;
+                    }
+                    dataLine[1] = description.replaceAll("\n","").replaceAll("\r","").trim();
+                    String[] remainingData = lineas[index].trim().split("\\s+");
+                    if(remainingData.length == 3){
+                        dataLine[2] = remainingData[0];
+                        if(remainingData[1].startsWith("-")){
+                            dataLine[4] = remainingData[1];
+                        }else{
+                            dataLine[3] = remainingData[1];
+                        }
+                        dataLine[5] = remainingData[2];   
+                    }else{
+                        if(remainingData[0].startsWith("-")){
+                            dataLine[4] = remainingData[0];
+                        }else{
+                            dataLine[3] = remainingData[0];
+                        }
+                        dataLine[5] = remainingData[1];
+                    }
+                    data.put(contRows, dataLine);
+                    contRows++;
+                    index++;  
+                }
+            }else{
+                //si no entra por los otros 2 llegamos al final de la tabla y salimos
+                break;
+
+            } 
+        }
+        return data;
+    }
+        
+    
+
+
+    public Map<String, String> parseHeader(String[] lines){
+        Map<String, String> data = new HashMap<>();
+
+        //flag para saber el año
+        boolean flag2023 = false;
+       
+        //cuit y iva
+        String reg2023 = "(CUIT:) (\\d*-\\d*-\\d*)\\s*(IVA:)\\s(.*)";
+        String reg2024 = "(CUIT).*(\\d{2}-\\d{8}-\\d{1})$";
+        
+        //esto es 2023
+        if(lines[0].trim().matches(reg2023)){
+            flag2023 = true;
+            Matcher m = Pattern.compile(reg2023).matcher(lines[0].trim());
+            String cuit="NULL";
+            String iva="NULL";
+            if(m.matches()){
+                cuit = m.group(2);
+                iva = m.group(4);
+            }
+            data.put("cuit", cuit);
+            data.put("iva", iva);
+        }else if(lines[0].trim().matches(reg2024)){
+            Matcher mCuit = Pattern.compile(reg2024).matcher(lines[0].trim());
+            String cuit = "NULL";
+            if(mCuit.matches()){
+                cuit = mCuit.group(2);
+            }
+            String iva = "NULL";
+            Matcher mIva = Pattern.compile("(IVA:)\\s(.*)$").matcher(lines[1].trim());  
+            if(mIva.matches()){
+                iva = mIva.group(2);
+            }
+            data.put("cuit", cuit);
+            data.put("iva", iva);
+        }else{
+            data.put("cuit", "NULL");
+            data.put("iva", "NULL");
+        }
+        
+        //DEBUG
+        System.out.println("Cuit y iva listo");
+
+        //numero de cuenta
+        String account="NULL";
+        //si es 2023
+        if(flag2023){
+            Matcher m = Pattern.compile("(Cuenta:)\\s([\\s\\d-]*)").matcher(lines[1].trim());
+            if(m.matches()){
+                account=m.group(2);
+            }
+
+        }else{
+            Matcher m = Pattern.compile("\\s([\\s\\d-]*)$").matcher(lines[13].trim());
+            if(m.matches()){
+                account = m.group(1);
+            }
+        }
+        data.put("cuenta", account);
+
+        //DEBUG
+        System.out.println("numero cuenta listo");
+
+        //lugar(puede estar en 2 renglones)
+        String lugar = "NULL";
+        if(!lines[3].startsWith("Resumen")){
+            lugar = lines[2].trim()+ lines[3].trim();
+            jumps++;
+        }else{
+            lugar = lines[2];
+        }
+        data.put("lugar", lugar);
+
+        //DEBUG
+        System.out.println("lugar listo");
+
+        //agregamos titulo
+        data.put("titulo", lines[3+jumps]);
+
+        //DEBUG
+        System.out.println("titulo listo");
+
+        //tipo de cuenta
+        String tipo = lines[10+jumps];
+        data.put("tipo de cuenta", tipo);
+
+        //DEBUG
+        System.out.println("tipo cuenta listo");
+
+        //periodos de movimiento
+        String periodo = lines[15+jumps];
+        String inicioPeriodo = periodo.substring(10, 20);
+        String finPeriodo = periodo.substring(0, 10);
+        data.put("inicio de periodo", inicioPeriodo);
+        data.put("fin de periodo", finPeriodo);    
+
+        //DEBUG
+        System.out.println("Periodo listo");
+        
+        //saldos
+        String saldoInicial = lines[18+jumps];
+        String saldoFinal = lines[17+jumps];
+        data.put("saldo inicial", saldoInicial);
+        data.put("saldo final", saldoFinal);
+
+        //DEBUG
+        System.out.println("Saldos listo");
+
+        
+        return data;
+
+    }
+}

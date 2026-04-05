@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.yo.Model.Banco;
-import com.yo.Model.DatabaseAdministrator;
 import com.yo.Model.Rule;
 import com.yo.Model.Transformer;
 

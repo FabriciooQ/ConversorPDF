@@ -11,10 +11,11 @@ import java.sql.SQLException;
 import com.yo.Controller.TransformationController;
 import com.yo.Controller.DatabaseController;
 import com.yo.Model.Banco;
-import com.yo.Model.DatabaseAdministrator;
 import com.yo.View.MainScene;
 import com.yo.View.ParameterSceneTable;
 import com.yo.pruebas.PruebaReader;
+import com.yo.repository.BancoRepository;
+import com.yo.repository.OrdenReglaRepository;
 
 import javafx.application.Application;
 import javafx.concurrent.Task;
@@ -51,7 +52,7 @@ public class App extends Application{
     //de la GUI
     public void start(Stage primaryStage) {
      /*    PruebaReader.run(); */
-         primaryStage.setResizable(true);
+        primaryStage.setResizable(true);
         primaryStage.setMinWidth(500);
         primaryStage.setMinHeight(500);
         //seteamos nombre y icono
@@ -59,10 +60,15 @@ public class App extends Application{
         Image image = new Image(getClass().getResourceAsStream("/img/logo.png"));
         primaryStage.getIcons().add(image);
 
-        //creamos el dbController para setear que las conexiones se cierren al cerrar el programa
+        //seteamos el banco actual en el databaseController
         DatabaseController dbController = DatabaseController.getDatabaseController();
+        Banco banco = dbController.getBancoPorId(1);
+        dbController.setBancoActual(banco);
+
+        //Cerramos las factorys y la conexion con bd
         primaryStage.setOnCloseRequest(event ->{
-            dbController.closeDB();
+            BancoRepository.close();
+            OrdenReglaRepository.close();
         });
 
         //creamos el sceneManager

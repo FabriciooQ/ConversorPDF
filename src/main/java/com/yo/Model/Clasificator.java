@@ -1,13 +1,5 @@
 package com.yo.Model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +11,7 @@ public class Clasificator {
 
 
     public Clasificator(){
+        //sacamos las reglas desde el controller porque aca esta el banco actual seteado
         this.rules = DatabaseController.getDatabaseController().getRulesInOrderPerBank();
     }
 
