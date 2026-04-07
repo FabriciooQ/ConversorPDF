@@ -24,7 +24,8 @@ public class OrdenReglaServices {
 
     //CAMBIAR PARA QUE LA LOGICA DEL CAMBIO ESTE ACA NO EN EL FRONTEND SI SE PUEDE
     public void cambiarOrden(OrdenRegla o){
-        if(o == null){
+        System.out.println(o.getRegla());
+        if(o == null || o.getRegla().getExpresion() == null || o.getRegla().getExpresion() == null){
             return;
         }
         this.ordenReglaRepository.modifyRegla(o);

@@ -25,28 +25,46 @@ public class ExtractorForGalicia implements Extractor{
             //si el siguiente grupo empieza con - es debito si no saldo
             if(m.group(4).startsWith("-")){
                 res[3] = null;  //credito
-                res[4] = m.group(4);    //debito
+                res[4] = m.group(4)                  //debito
+                    .replace("-", "")
+                    .replace(".", "")
+                    .replace(",", ".");    
             }else{
-                res[3] = m.group(4);
+                res[3] = m.group(4)                     //credito
+                    .replace("-", "")
+                    .replace(".", "")
+                    .replace(",", "."); 
                 res[4] = null;
                 }
-            res[5] = m.group(5).replaceFirst("-$", ""); //saldo
+            res[5] = m.group(5)                     //saldo
+                .replace("-", "")
+                .replace(".", "")
+                .replace(",", ".");  
         }else{
             m = pattern.matcher(line.trim());
             if(m.find()){
-                 res[0] = m.group(1);    //fecha
+                res[0] = m.group(1);    //fecha
                 res[1] = m.group(2).trim(); //descripcion
                 res[3] = null;    //origen
                 //si el siguiente grupo empieza con - es debito si no saldo
                 if(m.group(3).startsWith("-")){
                     res[3] = null;  //credito
-                    res[4] = m.group(3);    //debito
+                    res[4] = m.group(3)                      //debito
+                        .replace("-", "")
+                        .replace(".", "")
+                        .replace(",", "."); 
                 }else{
-                    res[3] = m.group(3);
+                    res[3] = m.group(3)                     //credito
+                        .replace("-", "")
+                        .replace(".", "")
+                        .replace(",", ".");     
                     res[4] = null;
                 }
                 //si el saldo termina con - lo borramos es un error que trae el pdf
-                res[5] = m.group(4).replaceFirst("-$", ""); //saldo
+                res[5] = m.group(4)                 //saldo
+                    .replace("-", "")
+                    .replace(".", "")
+                    .replace(",", ".");  
             }
         }
 

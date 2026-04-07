@@ -80,6 +80,11 @@ public class MainScene {
         folderLogoExcel.setPreserveRatio(true);
         this.buttonSelectExcel.setGraphic(folderLogoExcel);
 
+        if(transformationController.getLastPath() != null){
+            this.textAreaPDF.setText(transformationController.getLastPath());
+            this.textAreaExcel.setText(transformationController.getLastPath().replace(".pdf", ".xlsx"));
+        }
+
         //el boton parametros arranca disabled por defecto
         this.parametrosButton.setDisable(true);
         
@@ -92,8 +97,12 @@ public class MainScene {
     @FXML
     public void selectPDF(){
         String filePath = this.pdfChooser.openFile();
-        this.textAreaPDF.setText(filePath);
-        this.textAreaExcel.setText(filePath.replace(".pdf", ".xlsx"));
+        transformationController.setLastPath(filePath);
+        this.textAreaPDF.setText(transformationController.getLastPath());
+        this.textAreaExcel.setText(transformationController.getLastPath().replace(".pdf", ".xlsx"));
+        buttonAbrir.setVisible(false);
+        textoConvirtiendo.setText("");
+
     }   
 
     @FXML
@@ -143,6 +152,10 @@ public class MainScene {
         this.buttonSelectPDF.setDisable(true);
         this.buttonSelectExcel.setDisable(true);
         this.hboxConviertiendo.setVisible(true);
+        buttonAbrir.setVisible(false);
+        this.textoConvirtiendo.setText("Convirtiendo");
+
+
 
         Task task = new Task<Void>() {
             @Override

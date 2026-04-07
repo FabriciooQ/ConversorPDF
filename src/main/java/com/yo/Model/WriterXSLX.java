@@ -23,15 +23,33 @@ public class WriterXSLX {
     private XSSFSheet sheet;
     private FileOutputStream os;
     private int indexRow;
-    private int indexRowClasification;
+    private int initialRowData;
+    private int finalRowData;
+    private CellStyle headerStyle;
+    private CellStyle titleStyle;
     
 
     public WriterXSLX(XSSFWorkbook wb, FileOutputStream outputStream){
         this.wb = wb;
         this.os = outputStream;
         indexRow = 0;
-        indexRowClasification = 0;
+        this.initialRowData = 12;
+        this.finalRowData = 13;
         //estilo de celdas
+        this.headerStyle = wb.createCellStyle();
+        XSSFFont bold = wb.createFont();
+        bold.setBold(true);
+        headerStyle.setFont(bold);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        headerStyle.setBorderBottom(BorderStyle.THICK);
+        headerStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+
+        this.titleStyle = wb.createCellStyle();
+        XSSFFont f = wb.createFont();
+        f.setBold(true);
+        titleStyle.setFont(f);
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+
 
     }
 
@@ -59,20 +77,13 @@ public class WriterXSLX {
     }
 
     public void setTableHeader(Map<String,String> tableHeader, boolean flagClasification){
+        //reseamos el finalRowData
+        this.finalRowData=13;
         //distanciamos de la cabecera en 1
         indexRow++;
         //creamos fila
         XSSFRow rowTableHeader = sheet.createRow(indexRow);
         indexRow++;
-
-        //creamos estilo
-        XSSFCellStyle headerStyle = wb.createCellStyle();
-        XSSFFont bold = wb.createFont();
-        bold.setBold(true);
-        headerStyle.setFont(bold);
-        headerStyle.setAlignment(HorizontalAlignment.CENTER);
-        headerStyle.setBorderBottom(BorderStyle.THICK);
-        headerStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
 
         //Fecha
         XSSFCell cellDateHeader = rowTableHeader.createCell(0);
@@ -109,6 +120,10 @@ public class WriterXSLX {
             XSSFCell cellClasificationHeader = rowTableHeader.createCell(6);
             cellClasificationHeader.setCellStyle(headerStyle);
             cellClasificationHeader.setCellValue("Clasificacion");    
+
+            XSSFCell cellAux = rowTableHeader.createCell(8);
+            cellAux.setCellStyle(headerStyle);
+            cellAux.setCellValue("Auxiliar");
         }
 
 
@@ -116,38 +131,53 @@ public class WriterXSLX {
     
 
     public void setTableContent(Map<Integer,String[]> tableContent, Map<Integer, String> clasification ){
+        //tableContent.values().forEach((r) -> System.out.println(r));
+        this.finalRowData += tableContent.size();
         for(int i=0; i <tableContent.size(); i++){
             XSSFRow contentRow = sheet.createRow(indexRow);
             indexRow++;
             //fecha
             XSSFCell dateCell = contentRow.createCell(0);
             dateCell.setCellValue(tableContent.get(i)[0]);
+            //System.out.println("fecha escrita");
             //descripcion
             XSSFCell descriptionCell = contentRow.createCell(1);
             descriptionCell.setCellValue(tableContent.get(i)[1]);
+            //System.out.println("Descripción escrita");
             //origen
             if(tableContent.get(i)[2] != null){
                 XSSFCell originCell = contentRow.createCell(2);
                 originCell.setCellValue(tableContent.get(i)[2]);
+                //System.out.println("origen escrita");
+                
             }
             //credito
+            XSSFCell creditCell = contentRow.createCell(3);
             if(tableContent.get(i)[3] != null){
-                XSSFCell creditCell = contentRow.createCell(3);
-                creditCell.setCellValue(tableContent.get(i)[3]);
+                creditCell.setCellValue(Double.valueOf(tableContent.get(i)[3]));
+                //System.out.println("credito escrita");
             }
             //debito
+            XSSFCell debitCell = contentRow.createCell(4);
             if(tableContent.get(i)[4] != null){
-                XSSFCell debitCell = contentRow.createCell(4);
-                debitCell.setCellValue(tableContent.get(i)[4]);
+                debitCell.setCellValue(Double.valueOf("-"+tableContent.get(i)[4]));
+                //System.out.println("debito escrita");
             }
             //saldo 
             XSSFCell balanceCell = contentRow.createCell(5);
-            balanceCell.setCellValue(tableContent.get(i)[5]);
-            //clasificacion
+            balanceCell.setCellValue(Double.valueOf(tableContent.get(i)[5]));
+            //System.out.println("saldo escrito");
+            //clasificacion y resumen
             if(clasification != null){
                 XSSFCell clasificationCell = contentRow.createCell(6);
                 clasificationCell.setCellValue(clasification.get(i));
+                //creamos celda para sumar credito - debito
+                XSSFCell auxCell = contentRow.createCell(8);
+                String formula = creditCell.getReference()+"+"+debitCell.getReference();
+                auxCell.setCellFormula(formula);
             }
+
+            //System.out.println("Fila " + i + " seteada en xlslx");
         }
         int cant = 6;
         if (clasification != null){
@@ -156,6 +186,31 @@ public class WriterXSLX {
         for (int j=0; j<cant; j++){
             sheet.autoSizeColumn(j);
         }
+    }
+
+    public void setResumen(String[] clasification){
+        int index = 2;
+        XSSFRow tituloResumen = sheet.createRow(finalRowData+index);
+        XSSFCell tituloCell = tituloResumen.createCell(0);
+        tituloCell.setCellValue("Resumen");
+        tituloCell.setCellStyle(this.titleStyle);
+        sheet.addMergedRegion(new CellRangeAddress(finalRowData+index, finalRowData+index,0,2));
+        index++;
+        for(int i=0;i<clasification.length;i++){
+            XSSFRow auxRow = sheet.createRow(finalRowData+index);
+            XSSFCell categoryCell = auxRow.createCell(0);
+            categoryCell.setCellValue(clasification[i]);
+            XSSFCell valuCell = auxRow.createCell(1);
+            String formula = "SUMIF(G"+(initialRowData+1)+":G"+(finalRowData-1)+","+'"'+clasification[i]+'"'+",I"+(initialRowData+1)+":"+"I"+(finalRowData-1)+")";
+            valuCell.setCellFormula(formula);
+            index++;
+        } 
+        XSSFRow auxRow = sheet.createRow(finalRowData+index);
+        XSSFCell categoryCell = auxRow.createCell(0);
+        categoryCell.setCellValue("SIN CLASIFICAR");
+        XSSFCell valuCell = auxRow.createCell(1);
+        String formula = "SUMIF(G"+(initialRowData+1)+":G"+(finalRowData-1)+","+'"'+"SIN CLASIFICAR"+'"'+",I"+(initialRowData+1)+":"+"I"+(finalRowData-1)+")";
+        valuCell.setCellFormula(formula);
 
     }
 
@@ -165,15 +220,10 @@ public class WriterXSLX {
         indexRow++;
         XSSFCell cellTitulo = rowTitulo.createCell(0);
         cellTitulo.setCellValue(headerMap.get("titulo"));
-        XSSFFont f = wb.createFont();
-        f.setBold(true);
-        XSSFCellStyle titleStyle = wb.createCellStyle();
-        titleStyle.setFont(f);
-        titleStyle.setAlignment(HorizontalAlignment.CENTER);
         cellTitulo.setCellStyle(titleStyle);
-        int union = 6;
+        int union = 5;
         if(flagClasification){
-            union = 7;
+            union = 6;
         }
         sheet.addMergedRegion(new CellRangeAddress(0,0,0,union));
         //System.out.println("    Titulo seteado");
@@ -267,7 +317,7 @@ public class WriterXSLX {
         cellLabelSaldoInicial.setCellStyle(boldStyle);
         cellLabelSaldoInicial.setCellValue("saldo inicial (PDF)");
         XSSFCell cellSaldoinicial = rowSaldoInicial.createCell(1);
-        cellSaldoinicial.setCellValue(headerMap.get("saldo inicial"));
+        cellSaldoinicial.setCellValue(Double.valueOf(headerMap.get("saldo inicial")));
         //System.out.println("    Saldo inicial seteado");
 
 
@@ -278,7 +328,7 @@ public class WriterXSLX {
         cellLabelSaldoFinal.setCellStyle(boldStyle);
         cellLabelSaldoFinal.setCellValue("saldo final (PDF)");
         XSSFCell cellSaldoFinal = rowSaldoFinal.createCell(1);
-        cellSaldoFinal.setCellValue(headerMap.get("saldo final"));
+        cellSaldoFinal.setCellValue(Double.valueOf(headerMap.get("saldo final")));
         //System.out.println("    Saldo final seteado");
 
     }

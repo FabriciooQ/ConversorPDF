@@ -1,6 +1,5 @@
 package com.yo.Model;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -21,38 +20,43 @@ public class ParserForBBVA implements Parser{
     //cabecera comienza en el indice 29+jumps
     public Map<String, String> parseTableHeader(String[] lines){
         Map<String, String> data = new HashMap<>();
-        String[] tableHeader = lines[29+jumps].trim().split("\\s+");
-        for(String s:tableHeader){
-            data.put(s, s);
-        }
+        data.put("Fecha", "Fecha");
+        data.put("Descripción", "Descripción");
+        data.put("Origen", "Origen");
+        data.put("Crédito", "Crédito");
+        data.put("Débito", "Débito");
+        data.put("Saldo", "Saldo");
         return data;
     }
     
     public Map<Integer, String[]> parseContentTable(String[] lineas, boolean firstPage){
         Map<Integer, String[]> data = new HashMap<>();
         int contRows = 0;
-        int index = 56;
-        //porque sino se confunde con los renglones que empiezan con fecha en el header
+        int index=55;
         if(firstPage){
-            index=14;
+            index = jumps;
         }
+        System.out.println("Primera linea convertida:" + lineas[index]);
+
         while(index < lineas.length){
             //data del renglon de la tabla
             String[] dataLine = new String[6];
-          
+
             dataLine = this.extractor.extractDataInline(lineas[index]);
-            if(dataLine != null){
-                //agregamos datos al map con la llave del numero de fila
-                data.put(contRows, dataLine);
-                contRows++;
-                //sumamos index para ver la proxima fila
-                index++;
-            }else{
-                //si el extractor devuelve null no coincidio con ninguna fila y se acabo la tabla en la pagina
+            
+            if(dataLine == null){
                 break;
             }
+            
+            //agregamos datos al map con la llave del numero de fila
+            data.put(contRows, dataLine);
+            contRows+=1;
+            //sumamos index para ver la proxima fila
+            index+=1;
            
         } 
+        System.out.println("Ultima linea convertida:" + lineas[index-1]);
+
         return data;
     }
         
@@ -61,53 +65,69 @@ public class ParserForBBVA implements Parser{
 
     public Map<String, String> parseHeader(String[] lines){
         Map<String, String> data = new HashMap<>();
-       
-        //cuit y iva
-        String[] wordsCuit = lines[0].split("    ");
-        String cuit = wordsCuit[0].split(" ")[1];
-        String iva = wordsCuit[1].split(" ")[1] + " " + wordsCuit[1].split(" ")[2];
-        data.put("cuit", cuit);
-        data.put("iva", iva);
 
-        //numero de cuenta
-        String[] arrays = lines[1].split(" ");
-        String account = "";
-        for(int i=1;i<arrays.length;i++){
-            account += arrays[i];
+        Pattern pTipoCuenta = Pattern.compile("(Cuenta.*)\\nCONSOLIDADO");
+        Pattern pLugarCuit = Pattern.compile("(.*)\\s\\((\\d{2}-\\d{8,9}-\\d{1})\\)\\R");
+        Pattern pCuentaIva = Pattern.compile("Movimientos en cuenta.*\\R(.*) - (.*)\\R");
+        Pattern pSaldoInicial = Pattern.compile("([0-9.,]+)$");
+
+        String aux = "";
+        for (int i=0; i<lines.length; i++){
+            if(lines[i].startsWith("SALDO ANTERIOR")){
+                jumps = i+1;
+                aux += lines[i].trim();
+                break;
+            }else{
+                aux += lines[i].trim() + "\n";
+            }
         }
-        data.put("cuenta", account);
 
-        //lugar(puede estar en 2 renglones)
-        String lugar = null;
-        if(!lines[3].startsWith("Resumen")){
-            lugar = lines[2].trim()+ lines[3].trim();
-            jumps++;
+        System.out.println(aux);
+
+        Matcher m = pTipoCuenta.matcher(aux);
+        if(m.find()){
+            data.put("tipo de cuenta", m.group(1));
         }else{
-            lugar = lines[2];
+            data.put("tipo de cuenta", "NULL");
         }
-        data.put("lugar", lugar);
-        
-        //agregamos titulo
-        data.put("titulo", lines[3+jumps]);
+        System.out.println("Tipo cuenta listo");
+        m.reset();
+        m = pLugarCuit.matcher(aux);
+        if(m.find()){
+            data.put("lugar", m.group(1));
+            data.put("cuit", m.group(2));
+        }else{
+            data.put("lugar", "NULL");
+            data.put("cuit", "NULL");
+        }
+        System.out.println("Lugar listo");
+        m.reset();
+        m = pCuentaIva.matcher(aux);
+        if(m.find()){
+            data.put("cuenta", m.group(1));
+            data.put("iva", m.group(2));
+        }else{
+            data.put("cuenta", "NULL");
+            data.put("iva", "NULL");
+        }
+        System.out.println("cuenta y iva listo");
+        m.reset();
+        m = pSaldoInicial.matcher(aux);
+        if(m.find()){
+            data.put("saldo inicial", m.group(1)
+            .replace(".", "")
+            .replace(",", ".")
+            .replace("-", ""));
+        }else{
+            data.put("saldo inicial", "0.0");
+        }
+        System.out.println("saldo inicial listo");
+        data.put("titulo", "Resumen de Cuenta Corriente en Pesos");
+        data.put("inicio de periodo", "NULL");
+        data.put("fin de periodo", "NULL");    
+        data.put("saldo final", "0.0");
 
-        //tipo de cuenta
-        String tipo = lines[10+jumps];
-        data.put("tipo de cuenta", tipo);
-
-        //periodos de movimiento
-        String periodo = lines[15+jumps];
-        String inicioPeriodo = periodo.substring(10, 20);
-        String finPeriodo = periodo.substring(0, 10);
-        data.put("inicio de periodo", inicioPeriodo);
-        data.put("fin de periodo", finPeriodo);    
-        
-        //saldos
-        String saldoInicial = lines[18+jumps];
-        String saldoFinal = lines[17+jumps];
-        data.put("saldo inicial", saldoInicial);
-        data.put("saldo final", saldoFinal);
-        
-        return data;
-
+       System.out.println("Return de header listo");
+       return data;
     }
 }

@@ -16,6 +16,7 @@ import com.yo.Model.Transformer;
 //Singleton
 public class TransformationController {
     private Transformer transformer;
+    private String lastPath=null;
     private static TransformationController transformationController = null;
 
     public static TransformationController getTransformationController(){
@@ -29,6 +30,14 @@ public class TransformationController {
     
     private TransformationController(){
         
+    }
+
+    public void setLastPath(String path){
+        this.lastPath = path;
+    }
+
+    public String getLastPath(){
+        return lastPath;
     }
 
     public void transformToExcel(String pathFile, String pathDestinationFile, Banco banco, boolean flagClasification){

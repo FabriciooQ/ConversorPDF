@@ -84,18 +84,36 @@ public class ParserForGalicia implements Parser {
                     if(remainingData.length == 3){
                         dataLine[2] = remainingData[0];
                         if(remainingData[1].startsWith("-")){
-                            dataLine[4] = remainingData[1];
+                            dataLine[4] = remainingData[1]
+                                .replace("-", "")
+                                .replace(".", "")
+                                .replace(",", ".");
                         }else{
-                            dataLine[3] = remainingData[1];
+                            dataLine[3] = remainingData[1]
+                                .replace("-", "")
+                                .replace(".", "")
+                                .replace(",", ".");
                         }
-                        dataLine[5] = remainingData[2];   
+                        dataLine[5] = remainingData[2]
+                            .replace("-", "")
+                            .replace(".", "")
+                            .replace(",", ".");   
                     }else{
                         if(remainingData[0].startsWith("-")){
-                            dataLine[4] = remainingData[0];
+                            dataLine[4] = remainingData[0]
+                                .replace("-", "")
+                                .replace(".", "")
+                                .replace(",", ".");
                         }else{
-                            dataLine[3] = remainingData[0];
+                            dataLine[3] = remainingData[0]
+                                .replace("-", "")
+                                .replace(".", "")
+                                .replace(",", ".");
                         }
-                        dataLine[5] = remainingData[1];
+                        dataLine[5] = remainingData[1]
+                                .replace("-", "")
+                                .replace(".", "")
+                                .replace(",", ".");
                     }
                     data.put(contRows, dataLine);
                     contRows++;
@@ -213,8 +231,18 @@ public class ParserForGalicia implements Parser {
         System.out.println("Periodo listo");
         
         //saldos
-        String saldoInicial = lines[18+jumps];
-        String saldoFinal = lines[17+jumps];
+        String saldoInicial = lines[18+jumps]
+            .replace("$","")
+            .replace("-","")
+            .replace(".","")
+            .replace(",", ".");
+
+        String saldoFinal = lines[17+jumps]
+            .replace("$","")
+            .replace("-","")
+            .replace(".","")
+            .replace(",", ".");
+        System.out.println(saldoInicial);
         data.put("saldo inicial", saldoInicial);
         data.put("saldo final", saldoFinal);
 

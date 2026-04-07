@@ -43,7 +43,7 @@ public class App extends Application{
         //metodo que pertenece a la clase Application y inicializa el entorno de javafx
 
         launch(args); // esto arranca el JavaFX Application Thread
-        //peueba prueba = new peueba();
+        //PruebaReader prueba = new PruebaReader();
         //prueba.run();
     }
     

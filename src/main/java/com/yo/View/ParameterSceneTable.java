@@ -133,6 +133,7 @@ public class ParameterSceneTable {
         }
 
         reglasModificadas.clear();
+        SceneManager.switchTo("MainScene");
     }
 
     @FXML
@@ -387,6 +388,7 @@ public class ParameterSceneTable {
             //creamos nuevo OrdenRegla
             Banco banco = dbController.getBancoActual();
             Rule regla = new Rule();
+            System.out.println(regla);
             OrdenRegla nueva = new OrdenRegla(1, regla, banco);        
             reglasModificadas.add(nueva);
             rules = new ArrayList<OrdenRegla>(); 
